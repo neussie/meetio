@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Zoom scraper data
+.zoom-cookies.txt
+.zoom-browser-data/
+logs/
+*.log
+
+# Extension development
+*.crx
+*.pem
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Transcripts (local data)
+transcripts/

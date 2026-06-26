@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Harness Meeting Exporter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📝 Meeting Exporter</h1>
+      <p class="subtitle">Export Zoom transcripts</p>
+    </header>
+
+    <main>
+      <section class="status">
+        <div id="status-indicator" class="status-badge status-ready">
+          <span class="status-dot"></span>
+          <span id="status-text">Ready</span>
+        </div>
+      </section>
+
+      <section class="instructions">
+        <h3>How to use:</h3>
+        <ol>
+          <li>Go to <a href="https://hub.zoom.us/notes" target="_blank">hub.zoom.us/notes</a></li>
+          <li>Click the blue "Export All" button</li>
+          <li>Transcripts will download as markdown files</li>
+        </ol>
+      </section>
+
+      <section class="actions">
+        <button id="open-zoom" class="button button-primary">
+          Open Zoom Notes →
+        </button>
+        <button id="open-settings" class="button button-secondary">
+          ⚙️ Settings
+        </button>
+      </section>
+
+      <section class="info">
+        <p class="note">
+          <strong>Note:</strong> You must be logged into Zoom in this browser.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made for Harness.io • v0.1.0</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

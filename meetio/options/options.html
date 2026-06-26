@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Harness Meeting Exporter - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ Settings</h1>
+      <p class="subtitle">Configure Notion integration</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Notion Integration</h2>
+        <p class="description">
+          Connect to Notion to automatically sync meeting transcripts.
+          <a href="https://www.notion.so/my-integrations" target="_blank">Create an integration →</a>
+        </p>
+
+        <form id="settings-form">
+          <div class="form-group">
+            <label for="notion-token">Notion API Token</label>
+            <input
+              type="password"
+              id="notion-token"
+              placeholder="secret_xxxxxxxxxxxxxxxxxxxxxxxx"
+              autocomplete="off"
+            >
+            <p class="hint">
+              Get this from <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="notion-database-id">Notion Database ID</label>
+            <input
+              type="text"
+              id="notion-database-id"
+              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              autocomplete="off"
+            >
+            <p class="hint">
+              Copy from your database URL: <code>notion.so/[THIS_PART]?v=...</code>
+            </p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="button button-primary">Save Settings</button>
+            <button type="button" id="test-connection" class="button button-secondary">Test Connection</button>
+          </div>
+        </form>
+
+        <div id="save-status" class="status-message" style="display: none;"></div>
+      </section>
+
+      <section class="card">
+        <h2>Setup Instructions</h2>
+        <ol class="instructions">
+          <li>
+            Go to <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
+          </li>
+          <li>Click "+ New integration"</li>
+          <li>Name it "Harness Meeting Exporter"</li>
+          <li>Select your workspace</li>
+          <li>Copy the "Internal Integration Token"</li>
+          <li>Create or open your transcripts database in Notion</li>
+          <li>Click "Share" → Add your integration</li>
+          <li>Copy the database ID from the URL</li>
+          <li>Paste both values above and save</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>About</h2>
+        <p>
+          <strong>Harness Meeting Transcript Exporter</strong><br>
+          Version 0.1.0<br>
+          Built for Harness.io team
+        </p>
+        <p>
+          <a href="https://github.com/harness" target="_blank">GitHub</a> •
+          <a href="#" id="view-logs">View Logs</a> •
+          <a href="#" id="report-issue">Report Issue</a>
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

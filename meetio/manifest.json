@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Meetio",
+  "version": "1.0.0",
+  "description": "Export Zoom meeting transcripts to markdown with beautiful formatting. One click, all your notes.",
+  "author": "Neus Samir Escruela <neus.escruela@harness.io>",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "downloads",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "*://hub.zoom.us/*",
+    "*://us01docs.zoom.us/*",
+    "*://api.notion.com/*"
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Meetio - Export Meeting Transcripts"
+  },
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://hub.zoom.us/notes*"],
+      "js": ["content-scripts/utils.js", "content-scripts/zoom-scraper-final.js"],
+      "css": ["content-scripts/injected-ui.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "options_page": "options/options.html"
+}

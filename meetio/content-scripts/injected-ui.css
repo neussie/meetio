@@ -1,0 +1,14 @@
+/* Styles for UI elements injected into Zoom pages */
+
+#harness-export-button {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+#harness-export-button:hover {
+  /* Hover styles handled in JS for better control */
+}
+
+#harness-export-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
