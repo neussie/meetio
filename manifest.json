@@ -30,7 +30,7 @@
   "content_scripts": [
     {
       "matches": ["*://hub.zoom.us/notes*"],
-      "js": ["content-scripts/utils.js", "content-scripts/zoom-scraper-final.js"],
+      "js": ["content-scripts/utils.js", "content-scripts/platforms/zoom-scraper.js"],
       "css": ["content-scripts/injected-ui.css"],
       "run_at": "document_idle"
     }

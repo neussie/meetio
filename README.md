@@ -48,7 +48,7 @@ Now you can ask Claude to:
    - Open `chrome://extensions/` (or `edge://extensions/`)
    - Enable "Developer mode" (toggle in top right)
    - Click "Load unpacked"
-   - Select the `meetio` folder from your clone
+   - Select the **entire `meetio` folder** (the root, not a subfolder)
 
 3. Navigate to [hub.zoom.us/notes](https://hub.zoom.us/notes)
 
@@ -145,21 +145,42 @@ Each exported file is Notion-ready with structured metadata:
 
 ```
 meetio/
-├── manifest.json                 # Extension configuration
+├── manifest.json                    # Extension configuration
 ├── content-scripts/
-│   ├── utils.js                 # Utility functions (logging, file download)
-│   ├── zoom-scraper-final.js    # Main scraper logic
-│   └── injected-ui.css          # Button styles
+│   ├── platforms/                   # Platform-specific scrapers
+│   │   ├── zoom-scraper.js          # Zoom Notes scraper
+│   │   └── chorus-scraper.js        # Chorus.ai scraper (coming soon)
+│   ├── utils.js                     # Shared utilities (logging, file download)
+│   └── injected-ui.css              # UI styles
 ├── background/
-│   ├── service-worker.js        # Background tasks
-│   └── notion-api.js            # Notion integration (future)
+│   ├── service-worker.js            # Background tasks
+│   └── notion-api.js                # Notion integration (future)
 ├── popup/
-│   ├── popup.html               # Extension popup UI
-│   └── popup.js                 # Popup logic
-└── options/
-    ├── options.html             # Settings page
-    └── options.js               # Settings logic
+│   ├── popup.html                   # Extension popup UI
+│   └── popup.js                     # Popup logic
+├── options/
+│   ├── options.html                 # Settings page
+│   └── options.js                   # Settings logic
+├── icons/                           # Extension icons
+├── samples/                         # Example exports (not in repo)
+├── README.md
+├── CONTRIBUTING.md
+└── LICENSE
 ```
+
+### Adding New Platforms
+
+To add support for Chorus.ai or other platforms:
+
+1. Create `content-scripts/platforms/chorus-scraper.js`
+2. Add new `content_scripts` entry in `manifest.json`:
+   ```json
+   {
+     "matches": ["*://chorus.ai/*"],
+     "js": ["content-scripts/utils.js", "content-scripts/platforms/chorus-scraper.js"]
+   }
+   ```
+3. Follow the pattern from `zoom-scraper.js`
 
 ### Making Changes
 
