@@ -1,8 +1,8 @@
 # Meetio 🎯
 
-**Your AI-powered meeting memory. Export Zoom transcripts and supercharge Claude with perfect customer context.**
+**Your AI-powered meeting memory. Export Zoom and Chorus.ai transcripts and supercharge Claude with perfect customer context.**
 
-Stop copy-pasting meeting notes into Claude. Stop losing track of customer conversations across Zoom, Chorus, and scattered notes. Meetio exports all your Zoom transcripts in bulk, ready to feed into Claude via Notion for AI-powered customer intelligence.
+Stop copy-pasting meeting notes into Claude. Stop losing track of customer conversations across Zoom, Chorus, and scattered notes. Meetio exports transcripts from **Zoom Notes** and **Chorus.ai** in bulk, ready to feed into Claude via Notion for AI-powered customer intelligence.
 
 ## 🎯 Why Meetio?
 
@@ -27,6 +27,7 @@ Now you can ask Claude to:
 
 ## ✨ Features
 
+- **Multi-Platform Support**: Export from **Zoom Notes** and **Chorus.ai**
 - **Bulk Export**: Download all your Zoom meeting notes in one click
 - **Beautiful Formatting**: Clean markdown with metadata, speaker labels, and timestamps
 - **Smart Parsing**: Automatically extracts meeting names, dates, and attendees
@@ -88,13 +89,22 @@ Claude now has perfect context from every customer conversation! 🎉
 
 ## 📖 Daily Usage
 
-### Export Your Zoom Transcripts
+### Export from Zoom Notes
 
 1. Go to your Zoom notes: [hub.zoom.us/notes](https://hub.zoom.us/notes)
 2. Wait for the sidebar with your notes list to load
 3. Click the **"📚 Export All Notes"** button in the bottom right corner
 4. Confirm the export (if you have more than 5 notes)
 5. Your markdown files download automatically!
+
+### Export from Chorus.ai
+
+1. Go to a meeting detail page on [chorus.ai](https://chorus.ai)
+2. Make sure the transcript is visible on the page
+3. Click the **"📚 Export to Markdown"** button in the bottom right corner
+4. Your markdown file downloads automatically!
+
+**Note**: Chorus scraper works on individual meeting pages. For bulk export, navigate to each meeting you want to export.
 
 ### Upload to Notion
 
@@ -170,17 +180,22 @@ meetio/
 
 ### Adding New Platforms
 
-To add support for Chorus.ai or other platforms:
+Meetio currently supports:
+- ✅ **Zoom Notes** (hub.zoom.us/notes) - Bulk export
+- ✅ **Chorus.ai** - Individual meeting export
 
-1. Create `content-scripts/platforms/chorus-scraper.js`
+To add support for other platforms (Gong, Salesloft, etc.):
+
+1. Create `content-scripts/platforms/{platform}-scraper.js`
 2. Add new `content_scripts` entry in `manifest.json`:
    ```json
    {
-     "matches": ["*://chorus.ai/*"],
-     "js": ["content-scripts/utils.js", "content-scripts/platforms/chorus-scraper.js"]
+     "matches": ["*://platform.com/*"],
+     "js": ["content-scripts/utils.js", "content-scripts/platforms/platform-scraper.js"]
    }
    ```
-3. Follow the pattern from `zoom-scraper.js`
+3. Follow the pattern from `zoom-scraper.js` or `chorus-scraper.js`
+4. Use the `window.HarnessExporterUtils` helpers (log, sleep, slugify, downloadFile)
 
 ### Making Changes
 

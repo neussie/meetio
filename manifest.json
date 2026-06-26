@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Meetio",
-  "version": "1.0.0",
-  "description": "Export Zoom meeting transcripts to markdown with beautiful formatting. One click, all your notes.",
+  "version": "1.1.0",
+  "description": "Export meeting transcripts from Zoom and Chorus.ai to markdown. Your AI memory system.",
   "author": "Neus Samir Escruela <neus.escruela@harness.io>",
 
   "permissions": [
@@ -15,6 +15,7 @@
   "host_permissions": [
     "*://hub.zoom.us/*",
     "*://us01docs.zoom.us/*",
+    "*://*.chorus.ai/*",
     "*://api.notion.com/*"
   ],
 
@@ -31,6 +32,12 @@
     {
       "matches": ["*://hub.zoom.us/notes*"],
       "js": ["content-scripts/utils.js", "content-scripts/platforms/zoom-scraper.js"],
+      "css": ["content-scripts/injected-ui.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.chorus.ai/*"],
+      "js": ["content-scripts/utils.js", "content-scripts/platforms/chorus-scraper.js"],
       "css": ["content-scripts/injected-ui.css"],
       "run_at": "document_idle"
     }
