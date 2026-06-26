@@ -28,25 +28,38 @@
 
   /**
    * Get all meeting cards/rows from the home page
-   * The parent row is clickable, not just the link
+   * ONLY meetings with recordings (has "Meeting Recap" badge)
    */
   function getAllMeetingCards() {
-    log('Searching for meeting cards...');
+    log('Searching for meeting cards with recordings...');
 
     // Find calendar rows that contain meeting info
     const rows = Array.from(document.querySelectorAll('.calendar-row, [class*="calendar-row"]'));
 
-    // Filter to only rows that have meeting content (not just time headers)
+    // Filter to only rows that have meeting content AND recordings
     const meetingRows = rows.filter(row => {
       const text = row.textContent;
+
       // Must have substantial content and look like a meeting
-      return text.length > 30 &&
-             (text.match(/AM|PM/) || text.match(/\d{1,2}:\d{2}/)) &&
-             !text.includes('Sunday') && // Skip day headers
-             !text.includes('Monday');
+      if (text.length < 30) return false;
+      if (!text.match(/AM|PM/) && !text.match(/\d{1,2}:\d{2}/)) return false;
+      if (text.includes('Sunday') || text.includes('Monday')) return false;
+
+      // CRITICAL: Must have "Meeting Recap" badge (indicates recording exists)
+      if (!text.includes('Meeting Recap')) {
+        return false;
+      }
+
+      // Skip grayed-out meetings (no recording indicator)
+      const grayedOut = row.querySelector('.color-lighter-grey');
+      if (grayedOut && text.includes('—')) {
+        return false;
+      }
+
+      return true;
     });
 
-    log(`✓ Found ${meetingRows.length} meeting rows`);
+    log(`✓ Found ${meetingRows.length} meetings WITH recordings`);
 
     if (meetingRows.length > 0) {
       log('First 5 meetings:');
