@@ -539,9 +539,29 @@
         link.scrollIntoView({ behavior: 'smooth', block: 'center' });
         await sleep(300);
 
-        // Click the meeting link to open side panel
+        // Click the meeting link to open side panel (but prevent navigation!)
         log('  Clicking meeting...');
-        link.click();
+
+        // Use MouseEvent to simulate click without following the link
+        const clickEvent = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        });
+
+        // Add event listener to prevent default navigation
+        const preventNav = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+        link.addEventListener('click', preventNav, { once: true, capture: true });
+
+        // Dispatch the click
+        link.dispatchEvent(clickEvent);
+
+        // Small delay before removing listener
+        await sleep(100);
+        link.removeEventListener('click', preventNav, { capture: true });
 
         // Wait for side panel to appear
         await sleep(2000);
