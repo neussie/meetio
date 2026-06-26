@@ -48,8 +48,8 @@
   }
 
   /**
-   * Wait for the side panel to appear and load
-   * Since panel structure varies, we wait for the copy button to appear
+   * Wait for the side panel to appear
+   * We look for the Transcript tab to appear (indicates panel loaded)
    */
   async function waitForSidePanel() {
     log('Waiting for side panel...');
@@ -58,33 +58,37 @@
     const maxAttempts = 20; // 10 seconds
 
     while (attempts < maxAttempts) {
-      // Check if copy button appeared (indicates panel is loaded)
-      const copyButton = findCopyTranscriptButton(document);
+      // Check if Transcript tab appeared (indicates panel is loaded)
+      const allTabs = document.querySelectorAll('[role="tab"]');
+      let transcriptTabFound = false;
 
-      if (copyButton) {
-        log('✓ Side panel loaded (copy button found)');
+      for (const tab of allTabs) {
+        if (tab.textContent.trim().toLowerCase() === 'transcript') {
+          transcriptTabFound = true;
+          log('✓ Side panel loaded (Transcript tab found)');
 
-        // Find the panel container - walk up from copy button
-        let panel = copyButton.closest('[class*="preview"]') ||
-                    copyButton.closest('[class*="panel"]') ||
-                    copyButton.closest('[class*="drawer"]') ||
-                    copyButton.closest('aside') ||
-                    document; // Fallback to whole document
+          // Find the panel container - walk up from tab
+          let panel = tab.closest('[class*="preview"]') ||
+                      tab.closest('[class*="panel"]') ||
+                      tab.closest('[class*="drawer"]') ||
+                      tab.closest('aside') ||
+                      document; // Fallback to whole document
 
-        if (panel !== document) {
-          log(`✓ Found panel container: ${panel.className}`);
-        } else {
-          log('Using whole document as panel');
+          if (panel !== document) {
+            log(`✓ Found panel container: ${panel.className}`);
+          } else {
+            log('Using whole document as panel');
+          }
+
+          return panel;
         }
-
-        return panel;
       }
 
       await sleep(500);
       attempts++;
     }
 
-    log('⚠️  Side panel did not load (no copy button found)');
+    log('⚠️  Side panel did not load (no Transcript tab found)');
     return null;
   }
 
@@ -263,14 +267,32 @@
     log('Extracting transcript from side panel...');
 
     // First, try to find and click the "Transcript" tab if needed
-    const transcriptTab = Array.from(panel.querySelectorAll('[role="tab"], button, a')).find(el =>
-      el.textContent.trim().toLowerCase() === 'transcript'
-    );
+    // Look for Material Design tab: div[role="tab"] with text "Transcript"
+    const allTabs = document.querySelectorAll('[role="tab"]');
+    let transcriptTab = null;
+
+    for (const tab of allTabs) {
+      const tabText = tab.textContent.trim().toLowerCase();
+      if (tabText === 'transcript') {
+        // Check if it's NOT already active
+        const isActive = tab.classList.contains('mdc-tab--active') ||
+                        tab.classList.contains('mat-mdc-tab-active') ||
+                        tab.getAttribute('aria-selected') === 'true';
+
+        if (!isActive) {
+          transcriptTab = tab;
+          log(`Found Transcript tab (inactive): ${tab.className}`);
+        } else {
+          log('Transcript tab already active');
+        }
+        break;
+      }
+    }
 
     if (transcriptTab) {
       log('Clicking Transcript tab...');
       transcriptTab.click();
-      await sleep(1000);
+      await sleep(1500); // Wait for tab content to load
     }
 
     // Get metadata
