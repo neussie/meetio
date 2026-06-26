@@ -24,3 +24,8 @@ logs/
 
 # Sample data (excluded from repo)
 samples/
+
+# Debug/diagnostic output files
+chorus-console-output.txt
+*-console-output.txt
+debug-*.txt

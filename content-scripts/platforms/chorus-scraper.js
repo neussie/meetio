@@ -1,6 +1,6 @@
 /**
  * Chorus.ai Meeting Scraper
- * Extracts meeting transcripts from chorus.ai
+ * Supports bulk export from Home page and single export from meeting pages
  */
 
 (function() {
@@ -16,58 +16,68 @@
   function detectChorusPage() {
     const url = window.location.href;
 
-    if (url.includes('/meetings') || url.includes('/calls')) {
-      return 'list'; // Meeting list view
-    } else if (url.includes('/meeting/') || url.includes('/call/')) {
-      return 'detail'; // Individual meeting view
+    // Home page or calendar view with meeting list
+    if (url.includes('/my-profile') || url.includes('/home') || url.includes('chorus.ai/') && !url.includes('/meeting/')) {
+      return 'list';
+    }
+    // Individual meeting detail page
+    else if (url.includes('/meeting/') || url.includes('/call/')) {
+      return 'detail';
     }
 
     return 'unknown';
   }
 
   /**
-   * Get all meeting cards from the list view
+   * Get all meeting links from the home/list page
    */
-  function getAllMeetingCards() {
-    // Chorus typically uses cards or list items for meetings
-    // We'll try multiple selectors
+  function getAllMeetingLinks() {
+    log('Searching for meeting links...');
 
-    const selectors = [
-      '[data-testid*="meeting"]',
-      '[data-testid*="call"]',
-      '.meeting-card',
-      '.call-card',
-      '[class*="MeetingCard"]',
-      '[class*="CallCard"]',
-      'article',
-      '[role="article"]'
-    ];
+    // Based on console output: a[href*="/meeting/"]
+    const links = Array.from(document.querySelectorAll('a[href*="/meeting/"]'));
 
-    let cards = [];
+    log(`✓ Found ${links.length} meeting links`);
 
-    for (const selector of selectors) {
-      cards = Array.from(document.querySelectorAll(selector));
-      if (cards.length > 0) {
-        log(`✓ Found ${cards.length} meetings using selector: ${selector}`);
-        break;
+    // Extract data from each link
+    const meetings = links.map((link, i) => {
+      const href = link.href;
+      const meetingId = href.split('/meeting/')[1];
+      const text = link.textContent.trim();
+
+      // Try to parse title and date from link text
+      // Format: "Title Company XX mins left  Date"
+      let title = text;
+      let date = '';
+
+      // Extract date (pattern: Jun 22, 2026)
+      const dateMatch = text.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}/);
+      if (dateMatch) {
+        date = dateMatch[0];
+        // Remove date from title
+        title = text.substring(0, text.indexOf(dateMatch[0])).trim();
       }
-    }
 
-    if (cards.length === 0) {
-      log('✗ Could not find meeting cards. Trying fallback...');
-      // Fallback: Look for clickable elements with date-like text
-      const allLinks = document.querySelectorAll('a, div[role="button"], button');
-      cards = Array.from(allLinks).filter(el => {
-        const text = el.textContent;
-        // Must contain date patterns and meeting-like content
-        return (text.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/) || text.match(/20\d{2}/)) &&
-               text.length > 30 &&
-               text.length < 500;
+      // Clean up title (remove "XX mins left" pattern)
+      title = title.replace(/\d+\s+mins?\s+left/gi, '').trim();
+
+      return {
+        href,
+        meetingId,
+        title,
+        date,
+        rawText: text
+      };
+    });
+
+    if (meetings.length > 0) {
+      log('First 3 meetings:');
+      meetings.slice(0, 3).forEach((m, i) => {
+        log(`  [${i}] ${m.title} - ${m.date}`);
       });
-      log(`Fallback found ${cards.length} potential meetings`);
     }
 
-    return cards;
+    return meetings;
   }
 
   /**
@@ -76,168 +86,155 @@
   function extractMeetingMetadata() {
     log('Extracting meeting metadata...');
 
-    // Try to find meeting title
+    // Try to find meeting title in header
     const titleSelectors = [
       'h1',
-      '[data-testid*="title"]',
-      '[class*="Title"]',
-      '[class*="heading"]',
-      'header h2',
-      'header h3'
+      'h2',
+      '[class*="meeting-title"]',
+      '[class*="MeetingTitle"]',
+      '[class*="heading"]'
     ];
 
     let title = 'Unknown Meeting';
     for (const selector of titleSelectors) {
       const el = document.querySelector(selector);
-      if (el && el.textContent.trim().length > 0) {
+      if (el && el.textContent.trim().length > 5 && el.textContent.trim().length < 200) {
         title = el.textContent.trim();
         log(`✓ Found title: ${title}`);
         break;
       }
     }
 
-    // Try to find date
-    const dateSelectors = [
-      '[data-testid*="date"]',
-      '[class*="Date"]',
-      'time',
-      '[datetime]'
-    ];
-
+    // Try to find date from "Meeting Details" section
     let meetingDate = new Date().toISOString().split('T')[0];
-    for (const selector of dateSelectors) {
-      const el = document.querySelector(selector);
-      if (el) {
-        const dateText = el.textContent || el.getAttribute('datetime');
-        if (dateText) {
-          const parsed = new Date(dateText);
-          if (!isNaN(parsed)) {
-            meetingDate = parsed.toISOString().split('T')[0];
-            log(`✓ Found date: ${meetingDate}`);
-            break;
-          }
-        }
+
+    // Look for text like "Meeting Date: Jun 24, 2026"
+    const dateText = document.body.textContent;
+    const dateMatch = dateText.match(/Meeting Date:\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}/);
+    if (dateMatch) {
+      const parsed = new Date(dateMatch[0].replace('Meeting Date:', '').trim());
+      if (!isNaN(parsed)) {
+        meetingDate = parsed.toISOString().split('T')[0];
+        log(`✓ Found date: ${meetingDate}`);
       }
     }
 
-    // Try to find attendees
-    const attendeeSelectors = [
-      '[data-testid*="attendee"]',
-      '[data-testid*="participant"]',
-      '[class*="Attendee"]',
-      '[class*="Participant"]',
-      '[class*="avatar"]'
-    ];
-
+    // Try to find participants
+    const participantElements = document.querySelectorAll('[class*="participant"], [class*="Participant"], [class*="avatar"]');
     const attendees = [];
-    attendeeSelectors.forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach(el => {
-        const name = el.textContent.trim() || el.getAttribute('title') || el.getAttribute('aria-label');
-        if (name && name.length > 2 && name.length < 50 && !attendees.includes(name)) {
-          attendees.push(name);
-        }
-      });
+
+    participantElements.forEach(el => {
+      const name = el.getAttribute('title') || el.getAttribute('aria-label') || el.textContent.trim();
+      if (name && name.length > 2 && name.length < 50 && !attendees.includes(name) && !name.match(/^[A-Z]{2}$/)) {
+        attendees.push(name);
+      }
     });
 
-    log(`✓ Found ${attendees.length} attendees: ${attendees.join(', ')}`);
+    log(`✓ Found ${attendees.length} attendees`);
 
     return {
       title,
       meetingDate,
-      attendees: attendees.join(', ')
+      attendees: attendees.slice(0, 10).join(', ') // Limit to 10
     };
   }
 
   /**
-   * Extract transcript from detail page
+   * Extract transcript from the "Transcript" tab on detail page
    */
   async function extractTranscript() {
     log('Extracting transcript...');
 
+    // First, check if we need to click the "Transcript" tab
+    const transcriptTab = Array.from(document.querySelectorAll('[role="tab"], button, a')).find(el =>
+      el.textContent.trim().toLowerCase() === 'transcript'
+    );
+
+    if (transcriptTab && !transcriptTab.classList.contains('active')) {
+      log('Clicking Transcript tab...');
+      transcriptTab.click();
+      await sleep(2000); // Wait for content to load
+    }
+
     const metadata = extractMeetingMetadata();
 
     // Look for transcript container
-    const transcriptSelectors = [
-      '[data-testid*="transcript"]',
-      '[class*="Transcript"]',
-      '[class*="transcript"]',
-      '[role="article"]',
-      'main',
-      '[class*="Content"]'
-    ];
-
-    let transcriptContainer = null;
-    for (const selector of transcriptSelectors) {
-      const el = document.querySelector(selector);
-      if (el && el.textContent.length > 100) {
-        transcriptContainer = el;
-        log(`✓ Found transcript container: ${selector}`);
-        break;
-      }
-    }
+    // The transcript is usually in a scrollable container
+    const transcriptContainer = document.querySelector('[class*="transcript"]') ||
+                                 document.querySelector('[class*="Transcript"]') ||
+                                 document.querySelector('main');
 
     if (!transcriptContainer) {
       log('✗ Could not find transcript container');
       return null;
     }
 
-    // Extract speaker entries
-    // Chorus typically formats as: [Speaker Name] [Time] Text
+    log('✓ Found transcript container');
+
+    // Chorus transcript format: timestamp + speaker + text
+    // Look for individual transcript lines/entries
     const transcriptLines = [];
 
-    // Try to find individual transcript entries
-    const entrySelectors = [
-      '[data-testid*="transcript-entry"]',
-      '[data-testid*="message"]',
-      '[class*="TranscriptEntry"]',
-      '[class*="Message"]',
-      'p'
-    ];
+    // Try to find individual entries (speaker blocks)
+    // Based on typical Chorus structure, each entry might be in its own div
+    const entries = transcriptContainer.querySelectorAll('[class*="transcript-entry"], [class*="TranscriptEntry"], p, [class*="message"]');
 
-    let entries = [];
-    for (const selector of entrySelectors) {
-      entries = Array.from(transcriptContainer.querySelectorAll(selector));
-      if (entries.length > 5) {
-        log(`✓ Found ${entries.length} transcript entries using: ${selector}`);
-        break;
-      }
-    }
+    if (entries.length < 5) {
+      log('Few structured entries found, parsing raw text...');
 
-    if (entries.length === 0) {
-      log('No structured entries found, parsing raw text...');
-      // Fallback: Parse raw text
+      // Fallback: Parse text content directly
       const text = transcriptContainer.textContent;
 
-      // Try to match patterns like:
-      // "Speaker Name 12:34:56 Text here"
-      // "Speaker Name: Text here"
-      const lines = text.split('\n').filter(line => line.trim().length > 0);
+      // Split by timestamps (HH:MM or MM:SS pattern)
+      const lines = text.split(/\n\d{1,2}:\d{2}\n/).filter(line => line.trim().length > 10);
 
-      lines.forEach(line => {
-        // Match speaker patterns
-        const speakerMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)[:\s]+(.+)$/);
-        if (speakerMatch) {
-          const speaker = speakerMatch[1];
-          const content = speakerMatch[2];
-          transcriptLines.push(`**${speaker}**: ${content}`);
+      lines.forEach((line, i) => {
+        const cleaned = line.trim();
+        if (cleaned.length > 5) {
+          // Try to extract speaker name (usually first words, capitalized)
+          const speakerMatch = cleaned.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+          if (speakerMatch) {
+            const speaker = speakerMatch[1];
+            const content = cleaned.substring(speaker.length).trim();
+            if (content.length > 0) {
+              transcriptLines.push(`**${speaker}**: ${content}`);
+            }
+          } else {
+            transcriptLines.push(cleaned);
+          }
         }
       });
     } else {
+      log(`✓ Found ${entries.length} transcript entries`);
+
       // Parse structured entries
       entries.forEach(entry => {
         const text = entry.textContent.trim();
         if (text.length < 5) return;
 
-        // Try to extract speaker and content
-        const speakerEl = entry.querySelector('[class*="speaker"], [class*="Speaker"], [class*="name"], [class*="Name"]');
-        const timeEl = entry.querySelector('[class*="time"], [class*="Time"], time');
+        // Try to find timestamp within entry
+        const timeMatch = text.match(/(\d{1,2}:\d{2})/);
+        const time = timeMatch ? timeMatch[1] : '';
 
-        const speaker = speakerEl ? speakerEl.textContent.trim() : 'Unknown';
-        const time = timeEl ? timeEl.textContent.trim() : '';
-        const content = text.replace(speaker, '').replace(time, '').trim();
+        // Try to find speaker name
+        let speaker = 'Unknown';
+        let content = text;
 
-        if (content.length > 0) {
+        // Look for bold/strong elements (often used for speaker names)
+        const strongEl = entry.querySelector('strong, b, [class*="speaker"], [class*="Speaker"]');
+        if (strongEl) {
+          speaker = strongEl.textContent.trim();
+          content = text.replace(speaker, '').replace(time, '').trim();
+        } else {
+          // Try to extract speaker from beginning
+          const speakerMatch = text.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+          if (speakerMatch) {
+            speaker = speakerMatch[1];
+            content = text.substring(speaker.length).replace(time, '').trim();
+          }
+        }
+
+        if (content.length > 0 && !content.match(/^(Transcript|Overview|Comments|Action Items)$/i)) {
           transcriptLines.push(`**${speaker}** ${time ? `(${time})` : ''}: ${content}`);
         }
       });
@@ -293,7 +290,7 @@
     const data = await extractTranscript();
 
     if (!data || !data.transcriptLines || data.transcriptLines.length === 0) {
-      alert('Could not extract transcript from this page. Make sure the transcript is visible.');
+      alert('Could not extract transcript. Make sure:\n1. The Transcript tab is visible\n2. The meeting has a transcript');
       return;
     }
 
@@ -303,47 +300,155 @@
     downloadFile(filename, markdown);
     log(`✓ Downloaded: ${filename}`);
 
-    alert(`Meeting exported successfully!\n${filename}`);
+    return { success: true, filename };
   }
 
   /**
-   * Diagnostic mode - inspect page structure
+   * Navigate to a meeting page and export it
    */
-  function runDiagnostics() {
-    log('\n=== CHORUS.AI DIAGNOSTIC MODE ===\n');
+  async function navigateAndExport(meetingUrl, meetingInfo) {
+    // Open in new tab
+    const newWindow = window.open(meetingUrl, '_blank');
 
-    const pageType = detectChorusPage();
-    log(`Page type: ${pageType}`);
-    log(`URL: ${window.location.href}`);
-
-    if (pageType === 'list') {
-      const cards = getAllMeetingCards();
-      log(`\nFound ${cards.length} meeting cards`);
-      cards.slice(0, 5).forEach((card, i) => {
-        log(`  [${i}] ${card.textContent.substring(0, 100).trim()}...`);
-      });
-    } else if (pageType === 'detail') {
-      const metadata = extractMeetingMetadata();
-      log(`\nMetadata:`);
-      log(`  Title: ${metadata.title}`);
-      log(`  Date: ${metadata.meetingDate}`);
-      log(`  Attendees: ${metadata.attendees}`);
+    if (!newWindow) {
+      log(`✗ Could not open ${meetingUrl} - popup blocked?`);
+      return { success: false, reason: 'Popup blocked', title: meetingInfo.title };
     }
 
-    log('\n=== END DIAGNOSTIC ===\n');
+    log(`✓ Opened ${meetingInfo.title} in new tab`);
+
+    // Note: We can't directly control the new tab from here due to browser security
+    // The user will need to click the export button in each tab
+    // OR we need to use a different approach (background script)
+
+    return { success: true, title: meetingInfo.title };
   }
 
   /**
-   * Add export button
+   * Export all meetings - opens tabs for user to export
+   */
+  async function exportAllMeetings() {
+    log('\n=== EXPORT ALL MEETINGS (BULK) ===\n');
+
+    const meetings = getAllMeetingLinks();
+
+    if (meetings.length === 0) {
+      alert('No meetings found on this page.\n\nMake sure you are on the Chorus home page with visible meetings.');
+      return;
+    }
+
+    // Confirm with user
+    const confirmMsg = `Found ${meetings.length} meetings.\n\n` +
+                       `Chorus doesn't allow full bulk export due to browser security.\n\n` +
+                       `Would you like to:\n` +
+                       `1. Open each meeting in a new tab\n` +
+                       `2. Then click the export button in each tab\n\n` +
+                       `This will open ${meetings.length} tabs.`;
+
+    if (!confirm(confirmMsg)) {
+      log('Bulk export cancelled by user');
+      return;
+    }
+
+    log(`Opening ${meetings.length} meeting tabs...`);
+
+    // Open meetings with delay to avoid overwhelming the browser
+    for (let i = 0; i < meetings.length; i++) {
+      const meeting = meetings[i];
+      log(`[${i + 1}/${meetings.length}] Opening: ${meeting.title}`);
+
+      window.open(meeting.href, '_blank');
+
+      // Wait before opening next tab
+      if (i < meetings.length - 1) {
+        await sleep(500); // 500ms delay between opens
+      }
+    }
+
+    alert(`✓ Opened ${meetings.length} meeting tabs!\n\n` +
+          `Now:\n` +
+          `1. Go to each tab\n` +
+          `2. Wait for the page to load\n` +
+          `3. Click the "📚 Export to Markdown" button\n` +
+          `4. Your transcripts will download!`);
+
+    log('✓ All tabs opened');
+  }
+
+  /**
+   * Add export button(s) based on page type
    */
   function addExportButton() {
     const pageType = detectChorusPage();
 
-    if (pageType !== 'detail') {
-      log('⚠️  Export button only available on meeting detail pages');
-      return;
+    if (pageType === 'list') {
+      // Add "Export All" button on list/home page
+      addBulkExportButton();
+    } else if (pageType === 'detail') {
+      // Add single export button on detail page
+      addSingleExportButton();
+    } else {
+      log('⚠️  Unknown page type, no button added');
     }
+  }
 
+  /**
+   * Add bulk export button (for home/list page)
+   */
+  function addBulkExportButton() {
+    const button = document.createElement('button');
+    button.id = 'meetio-chorus-bulk-btn';
+    button.textContent = '📚 Export All Meetings';
+    button.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 14px 24px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      transition: all 0.2s;
+    `;
+
+    button.addEventListener('mouseenter', () => {
+      button.style.background = '#4f46e5';
+      button.style.transform = 'translateY(-2px)';
+    });
+
+    button.addEventListener('mouseleave', () => {
+      button.style.background = '#6366f1';
+      button.style.transform = 'translateY(0)';
+    });
+
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = '⏳ Opening tabs...';
+
+      try {
+        await exportAllMeetings();
+      } catch (error) {
+        log('Error:', error);
+        alert('Export failed. Check console for details.');
+      }
+
+      button.disabled = false;
+      button.textContent = '📚 Export All Meetings';
+    });
+
+    document.body.appendChild(button);
+    log('✓ Bulk export button added');
+  }
+
+  /**
+   * Add single export button (for detail page)
+   */
+  function addSingleExportButton() {
     const button = document.createElement('button');
     button.id = 'meetio-chorus-export-btn';
     button.textContent = '📚 Export to Markdown';
@@ -379,7 +484,10 @@
       button.textContent = '⏳ Exporting...';
 
       try {
-        await exportCurrentMeeting();
+        const result = await exportCurrentMeeting();
+        if (result && result.success) {
+          alert(`✓ Meeting exported!\n\n${result.filename}`);
+        }
       } catch (error) {
         log('Error:', error);
         alert('Export failed. Check console for details.');
@@ -390,7 +498,7 @@
     });
 
     document.body.appendChild(button);
-    log('✓ Export button added');
+    log('✓ Single export button added');
   }
 
   /**
@@ -405,16 +513,18 @@
     const pageType = detectChorusPage();
     log(`Detected page type: ${pageType}`);
 
-    // Run diagnostics in console
-    runDiagnostics();
-
-    // Add export button on detail pages
-    if (pageType === 'detail') {
-      addExportButton();
-      log('✓ Ready to export!');
+    if (pageType === 'list') {
+      const meetings = getAllMeetingLinks();
+      log(`✓ Found ${meetings.length} meetings available for export`);
+      addBulkExportButton();
+    } else if (pageType === 'detail') {
+      log('✓ On meeting detail page');
+      addSingleExportButton();
     } else {
-      log('⚠️  Navigate to a meeting detail page to export');
+      log('⚠️  Not on a supported Chorus page');
     }
+
+    log('✓ Ready!');
   }
 
   // Start
