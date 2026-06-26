@@ -49,57 +49,82 @@
 
   /**
    * Wait for the side panel to appear and load
+   * Since panel structure varies, we wait for the copy button to appear
    */
   async function waitForSidePanel() {
     log('Waiting for side panel...');
 
-    // The side panel appears on the right side when you click a meeting
-    // Look for the panel by common identifiers
-    const selectors = [
-      '[class*="meeting-preview"]',
-      '[class*="MeetingPreview"]',
-      '[class*="side-panel"]',
-      '[class*="SidePanel"]',
-      'aside',
-      '[role="complementary"]'
-    ];
-
-    let panel = null;
     let attempts = 0;
     const maxAttempts = 20; // 10 seconds
 
-    while (!panel && attempts < maxAttempts) {
-      for (const selector of selectors) {
-        panel = document.querySelector(selector);
-        if (panel && panel.offsetParent !== null) { // Check if visible
-          log(`✓ Found side panel: ${selector}`);
-          return panel;
+    while (attempts < maxAttempts) {
+      // Check if copy button appeared (indicates panel is loaded)
+      const copyButton = findCopyTranscriptButton(document);
+
+      if (copyButton) {
+        log('✓ Side panel loaded (copy button found)');
+
+        // Find the panel container - walk up from copy button
+        let panel = copyButton.closest('[class*="preview"]') ||
+                    copyButton.closest('[class*="panel"]') ||
+                    copyButton.closest('[class*="drawer"]') ||
+                    copyButton.closest('aside') ||
+                    document; // Fallback to whole document
+
+        if (panel !== document) {
+          log(`✓ Found panel container: ${panel.className}`);
+        } else {
+          log('Using whole document as panel');
         }
+
+        return panel;
       }
+
       await sleep(500);
       attempts++;
     }
 
-    // Fallback: look for any element that appeared recently on the right side
-    log('⚠️  Could not find side panel with known selectors');
+    log('⚠️  Side panel did not load (no copy button found)');
     return null;
   }
 
   /**
    * Find the "Copy transcript" button in the side panel
+   * Button contains: <i class="fa-copy fa-regular">
    */
   function findCopyTranscriptButton(panel) {
-    if (!panel) return null;
+    if (!panel) {
+      // Search entire document if no panel specified
+      panel = document;
+    }
 
     log('Looking for Copy Transcript button...');
 
-    // Look for button with "Copy transcript" text
-    const buttons = panel.querySelectorAll('button, [role="button"], a');
+    // Method 1: Look for FontAwesome copy icon
+    const copyIcon = panel.querySelector('i.fa-copy, i[class*="fa-copy"]');
+    if (copyIcon) {
+      // Find the parent button
+      let button = copyIcon.closest('button');
+      if (!button) {
+        button = copyIcon.closest('[role="button"]');
+      }
+      if (!button) {
+        button = copyIcon.closest('a');
+      }
 
+      if (button) {
+        log('✓ Found Copy button via fa-copy icon');
+        return button;
+      }
+    }
+
+    // Method 2: Look for button with "Copy" text
+    const buttons = panel.querySelectorAll('button, [role="button"]');
     for (const button of buttons) {
       const text = button.textContent.toLowerCase();
-      if (text.includes('copy transcript') || text.includes('copy') && text.includes('transcript')) {
-        log('✓ Found Copy Transcript button');
+      if (text.includes('copy transcript') ||
+          (text.includes('copy') && button.querySelector('i.fa-copy'))) {
+        log('✓ Found Copy Transcript button via text');
         return button;
       }
     }
