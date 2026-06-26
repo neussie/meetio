@@ -93,9 +93,11 @@
   }
 
   /**
-   * Find the "Copy transcript" button in the side panel
+   * UNUSED: Find the "Copy transcript" button in the side panel
    * Button contains: <i class="fa-copy fa-regular">
+   * (Kept for reference - we now scrape DOM directly)
    */
+  /*
   function findCopyTranscriptButton(panel) {
     if (!panel) {
       // Search entire document if no panel specified
@@ -136,6 +138,7 @@
     log('✗ Could not find Copy Transcript button');
     return null;
   }
+  */
 
   /**
    * Extract meeting metadata from side panel
@@ -193,8 +196,10 @@
   }
 
   /**
-   * Click "Copy transcript" button and get transcript from clipboard
+   * UNUSED: Click "Copy transcript" button and get transcript from clipboard
+   * (Kept for reference - we now scrape DOM directly)
    */
+  /*
   async function getTranscriptFromClipboard(copyButton) {
     log('Clicking Copy Transcript button...');
 
@@ -259,6 +264,121 @@
       return [];
     }
   }
+  */
+
+  /**
+   * Scrape transcript directly from the DOM
+   * Chorus format: Speaker name, timestamp, then text
+   */
+  function scrapeTranscriptFromDOM() {
+    log('Scraping transcript from DOM...');
+
+    // The transcript is rendered as a series of elements
+    // Each entry typically has: speaker name, timestamp, and text
+
+    // Look for transcript entries - try multiple patterns
+    const containers = [
+      document.querySelector('[class*="transcript-container"]'),
+      document.querySelector('[class*="Transcript"]'),
+      document.querySelector('[id*="transcript"]'),
+      // Fallback: look for the active tab panel
+      document.querySelector('[role="tabpanel"][aria-hidden="false"]')
+    ].filter(Boolean);
+
+    if (containers.length === 0) {
+      log('✗ No transcript container found');
+      return [];
+    }
+
+    const container = containers[0];
+    log(`✓ Using container: ${container.className || container.id || container.tagName}`);
+
+    const transcriptLines = [];
+
+    // Try to find structured transcript entries
+    // Each entry might be in a div or list item
+    const entries = container.querySelectorAll('div, p, li');
+
+    let currentSpeaker = '';
+    let currentTime = '';
+    let currentText = '';
+
+    Array.from(entries).forEach(entry => {
+      const text = entry.textContent.trim();
+
+      if (text.length < 2) return;
+
+      // Check if this is a timestamp (e.g., "0:04")
+      if (text.match(/^\d{1,2}:\d{2}$/)) {
+        currentTime = text;
+      }
+      // Check if this is a speaker name (capitalized words, 2-4 words max)
+      else if (text.match(/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}$/) && text.length < 50) {
+        // Save previous entry if complete
+        if (currentSpeaker && currentText) {
+          transcriptLines.push(`**${currentSpeaker}** ${currentTime ? `(${currentTime})` : ''}: ${currentText}`);
+        }
+
+        currentSpeaker = text;
+        currentText = '';
+        currentTime = '';
+      }
+      // This is transcript text
+      else if (!text.match(/^(Overview|Comments|Transcript|Meeting Details|Action Items)$/i)) {
+        if (currentText) {
+          currentText += ' ' + text;
+        } else {
+          currentText = text;
+        }
+      }
+    });
+
+    // Add last entry
+    if (currentSpeaker && currentText) {
+      transcriptLines.push(`**${currentSpeaker}** ${currentTime ? `(${currentTime})` : ''}: ${currentText}`);
+    }
+
+    // If structured parsing didn't work, try simpler line-by-line
+    if (transcriptLines.length < 3) {
+      log('Structured parsing failed, trying line-by-line...');
+      const lines = container.innerText.split('\n').filter(l => l.trim().length > 5);
+
+      currentSpeaker = '';
+      currentTime = '';
+      currentText = '';
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+
+        if (trimmed.match(/^\d{1,2}:\d{2}$/)) {
+          currentTime = trimmed;
+        } else if (trimmed.match(/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}$/) && trimmed.length < 50) {
+          if (currentSpeaker && currentText) {
+            transcriptLines.push(`**${currentSpeaker}** ${currentTime ? `(${currentTime})` : ''}: ${currentText}`);
+          }
+          currentSpeaker = trimmed;
+          currentText = '';
+        } else if (!trimmed.match(/^(Overview|Comments|Transcript)$/i)) {
+          currentText = currentText ? currentText + ' ' + trimmed : trimmed;
+        }
+      });
+
+      if (currentSpeaker && currentText) {
+        transcriptLines.push(`**${currentSpeaker}** ${currentTime ? `(${currentTime})` : ''}: ${currentText}`);
+      }
+    }
+
+    log(`✓ Scraped ${transcriptLines.length} transcript entries`);
+
+    if (transcriptLines.length > 0) {
+      log('First 3 entries:');
+      transcriptLines.slice(0, 3).forEach((line, i) => {
+        log(`  [${i}] ${line.substring(0, 80)}...`);
+      });
+    }
+
+    return transcriptLines;
+  }
 
   /**
    * Extract transcript from side panel
@@ -292,59 +412,22 @@
     if (transcriptTab) {
       log('Clicking Transcript tab...');
       transcriptTab.click();
-      await sleep(1500); // Wait for tab content to load
+      await sleep(2000); // Wait for tab content to load
+    } else {
+      // Tab might already be active, wait a bit anyway
+      await sleep(500);
     }
 
-    // Get metadata
+    // Get metadata from the panel
     const metadata = extractMetadataFromPanel(panel);
 
-    // Find and use the "Copy transcript" button
-    const copyButton = findCopyTranscriptButton(panel);
+    // Scrape transcript directly from DOM (no clipboard needed!)
+    const transcriptLines = scrapeTranscriptFromDOM();
 
-    if (copyButton) {
-      const transcriptLines = await getTranscriptFromClipboard(copyButton);
-
-      if (transcriptLines.length > 0) {
-        log('First 3 entries:');
-        transcriptLines.slice(0, 3).forEach((line, i) => {
-          log(`  [${i}] ${line.substring(0, 80)}...`);
-        });
-
-        return {
-          ...metadata,
-          transcriptLines
-        };
-      }
+    if (transcriptLines.length === 0) {
+      log('✗ No transcript entries found');
+      return null;
     }
-
-    // Fallback: scrape transcript text directly from panel
-    log('⚠️  Falling back to direct scraping...');
-
-    const transcriptContainer = panel.querySelector('[class*="transcript"]') || panel;
-    const transcriptText = transcriptContainer.textContent;
-
-    // Parse transcript entries (simple fallback)
-    const transcriptLines = [];
-    const lines = transcriptText.split('\n').filter(line => line.trim().length > 10);
-
-    lines.forEach(line => {
-      const trimmed = line.trim();
-      if (trimmed.length > 5 && !trimmed.match(/^(Transcript|Overview|Comments)$/i)) {
-        // Try to identify speaker
-        const speakerMatch = trimmed.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
-        if (speakerMatch) {
-          const speaker = speakerMatch[1];
-          const content = trimmed.substring(speaker.length).trim();
-          if (content.length > 0) {
-            transcriptLines.push(`**${speaker}**: ${content}`);
-          }
-        } else {
-          transcriptLines.push(trimmed);
-        }
-      }
-    });
-
-    log(`✓ Scraped ${transcriptLines.length} lines`);
 
     return {
       ...metadata,
