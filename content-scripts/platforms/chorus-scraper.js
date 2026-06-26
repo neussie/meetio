@@ -27,24 +27,36 @@
   }
 
   /**
-   * Get all meeting links/cards from the home page
-   * Based on console output: a[href*="/meeting/"]
+   * Get all meeting cards/rows from the home page
+   * The parent row is clickable, not just the link
    */
-  function getAllMeetingLinks() {
-    log('Searching for meeting links...');
+  function getAllMeetingCards() {
+    log('Searching for meeting cards...');
 
-    const links = Array.from(document.querySelectorAll('a[href*="/meeting/"]'));
+    // Find calendar rows that contain meeting info
+    const rows = Array.from(document.querySelectorAll('.calendar-row, [class*="calendar-row"]'));
 
-    log(`✓ Found ${links.length} meeting links`);
+    // Filter to only rows that have meeting content (not just time headers)
+    const meetingRows = rows.filter(row => {
+      const text = row.textContent;
+      // Must have substantial content and look like a meeting
+      return text.length > 30 &&
+             (text.match(/AM|PM/) || text.match(/\d{1,2}:\d{2}/)) &&
+             !text.includes('Sunday') && // Skip day headers
+             !text.includes('Monday');
+    });
 
-    if (links.length > 0) {
+    log(`✓ Found ${meetingRows.length} meeting rows`);
+
+    if (meetingRows.length > 0) {
       log('First 5 meetings:');
-      links.slice(0, 5).forEach((link, i) => {
-        log(`  [${i}] ${link.textContent.trim().substring(0, 60)}...`);
+      meetingRows.slice(0, 5).forEach((row, i) => {
+        const text = row.textContent.trim().substring(0, 80);
+        log(`  [${i}] ${text}...`);
       });
     }
 
-    return links;
+    return meetingRows;
   }
 
   /**
@@ -509,59 +521,42 @@
   async function exportAllMeetings() {
     log('\n=== EXPORT ALL MEETINGS (BULK) ===\n');
 
-    const meetingLinks = getAllMeetingLinks();
+    const meetingCards = getAllMeetingCards();
 
-    if (meetingLinks.length === 0) {
+    if (meetingCards.length === 0) {
       alert('No meetings found on this page.\n\nMake sure you are on the Chorus home page.');
       return;
     }
 
     // Confirm with user
-    if (meetingLinks.length > 5) {
-      if (!confirm(`Export ${meetingLinks.length} meetings? This will download ${meetingLinks.length} markdown files.`)) {
+    if (meetingCards.length > 5) {
+      if (!confirm(`Export ${meetingCards.length} meetings? This will download ${meetingCards.length} markdown files.`)) {
         log('Export cancelled by user');
         return;
       }
     }
 
-    log(`Starting export of ${meetingLinks.length} meetings...\n`);
+    log(`Starting export of ${meetingCards.length} meetings...\n`);
 
     const results = [];
 
-    for (let i = 0; i < meetingLinks.length; i++) {
-      const link = meetingLinks[i];
-      const linkText = link.textContent.trim().substring(0, 60);
+    for (let i = 0; i < meetingCards.length; i++) {
+      const card = meetingCards[i];
+      const cardText = card.textContent.trim().substring(0, 60);
 
-      log(`\n[${i + 1}/${meetingLinks.length}] ${linkText}...`);
+      log(`\n[${i + 1}/${meetingCards.length}] ${cardText}...`);
 
       try {
         // Scroll into view
-        link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         await sleep(300);
 
-        // Click the meeting link to open side panel (but prevent navigation!)
-        log('  Clicking meeting...');
+        // Click the meeting row to open side panel
+        log('  Clicking meeting row...');
 
-        // Use MouseEvent to simulate click without following the link
-        const clickEvent = new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true
-        });
-
-        // Add event listener to prevent default navigation
-        const preventNav = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        };
-        link.addEventListener('click', preventNav, { once: true, capture: true });
-
-        // Dispatch the click
-        link.dispatchEvent(clickEvent);
-
-        // Small delay before removing listener
-        await sleep(100);
-        link.removeEventListener('click', preventNav, { capture: true });
+        // Simple click on the row (not the link)
+        // Chorus handles row clicks to show sidebar
+        card.click();
 
         // Wait for side panel to appear
         await sleep(2000);
@@ -569,7 +564,7 @@
 
         if (!panel) {
           log('  ✗ Side panel did not appear');
-          results.push({ success: false, title: linkText });
+          results.push({ success: false, title: cardText });
           continue;
         }
 
@@ -590,7 +585,7 @@
           results.push({ success: true, title: data.title });
         } else {
           log(`  ✗ No transcript found`);
-          results.push({ success: false, title: linkText });
+          results.push({ success: false, title: cardText });
         }
 
         // Close the side panel before moving to next
@@ -603,7 +598,7 @@
 
       } catch (error) {
         log(`  ✗ Error: ${error.message}`);
-        results.push({ success: false, title: linkText, error: error.message });
+        results.push({ success: false, title: cardText, error: error.message });
       }
     }
 
@@ -687,7 +682,7 @@
     log(`Detected page type: ${pageType}`);
 
     if (pageType === 'list') {
-      const meetings = getAllMeetingLinks();
+      const meetings = getAllMeetingCards();
       log(`✓ Found ${meetings.length} meetings available for export`);
 
       // Add export button
