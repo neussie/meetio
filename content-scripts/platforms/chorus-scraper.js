@@ -141,57 +141,72 @@
   */
 
   /**
-   * Extract meeting metadata from side panel
+   * Extract meeting metadata from Overview tab
+   * Must be called BEFORE clicking Transcript tab!
    */
-  function extractMetadataFromPanel(panel) {
-    if (!panel) {
-      return {
-        title: 'Unknown Meeting',
-        meetingDate: new Date().toISOString().split('T')[0],
-        attendees: ''
-      };
-    }
+  function extractMetadataFromOverviewTab() {
+    log('Extracting metadata from Overview tab...');
 
-    log('Extracting metadata from panel...');
+    // The Overview tab shows:
+    // - Meeting title (h1/h2 at top)
+    // - "Meeting Date: Jun 22, 2026"
+    // - "Participants: Name +13"
+    // - "Account: Company Name"
 
-    // Find title - usually an h1, h2, or link at the top
     let title = 'Unknown Meeting';
-    const titleEl = panel.querySelector('h1, h2, h3, [class*="title"], [class*="Title"]');
-    if (titleEl) {
-      title = titleEl.textContent.trim();
-      log(`✓ Title: ${title}`);
+    let meetingDate = new Date().toISOString().split('T')[0];
+    let attendees = '';
+    let account = '';
+
+    // Find title - big heading at top of panel
+    const titleSelectors = ['h1', 'h2', 'h3'];
+    for (const sel of titleSelectors) {
+      const els = document.querySelectorAll(sel);
+      for (const el of els) {
+        const text = el.textContent.trim();
+        // Skip navigation titles
+        if (text.length > 10 && text.length < 200 &&
+            !text.match(/^(Chorus|Home|Overview|Comments|Transcript)$/)) {
+          title = text;
+          log(`✓ Title: ${title}`);
+          break;
+        }
+      }
+      if (title !== 'Unknown Meeting') break;
     }
 
-    // Find date - look for "Meeting Date:" label or similar
-    let meetingDate = new Date().toISOString().split('T')[0];
-    const dateText = panel.textContent;
-    const dateMatch = dateText.match(/Meeting Date:\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}/);
+    // Find "Meeting Date: Jun 22, 2026"
+    const bodyText = document.body.innerText;
+    const dateMatch = bodyText.match(/Meeting Date:\s*([A-Za-z]{3}\s+\d{1,2},\s+\d{4})/);
     if (dateMatch) {
-      const parsed = new Date(dateMatch[0].replace('Meeting Date:', '').trim());
+      const parsed = new Date(dateMatch[1]);
       if (!isNaN(parsed)) {
         meetingDate = parsed.toISOString().split('T')[0];
-        log(`✓ Date: ${meetingDate}`);
+        log(`✓ Date: ${meetingDate} (from "${dateMatch[1]}")`);
       }
     }
 
-    // Find participants/attendees
-    const participantEls = panel.querySelectorAll('[class*="participant"], [class*="Participant"], [title]');
-    const attendees = [];
+    // Find "Participants: Steven Lilford +13"
+    const participantsMatch = bodyText.match(/Participants?:\s*([^\n]+)/);
+    if (participantsMatch) {
+      attendees = participantsMatch[1].trim();
+      // Clean up the "+13" part if present
+      attendees = attendees.replace(/\s*\+\d+$/, ' and others');
+      log(`✓ Participants: ${attendees}`);
+    }
 
-    participantEls.forEach(el => {
-      const name = el.getAttribute('title') || el.textContent.trim();
-      if (name && name.length > 2 && name.length < 50 &&
-          !attendees.includes(name) && !name.match(/^[A-Z]{2}$/)) {
-        attendees.push(name);
-      }
-    });
-
-    log(`✓ Found ${attendees.length} attendees`);
+    // Find "Account: Infosys Ltd"
+    const accountMatch = bodyText.match(/Account:\s*([^\n]+)/);
+    if (accountMatch) {
+      account = accountMatch[1].trim();
+      log(`✓ Account: ${account}`);
+    }
 
     return {
       title,
       meetingDate,
-      attendees: attendees.slice(0, 10).join(', ')
+      attendees,
+      account
     };
   }
 
@@ -382,12 +397,17 @@
 
   /**
    * Extract transcript from side panel
+   * Flow: Extract metadata from Overview → Click Transcript tab → Scrape transcript
    */
   async function extractTranscriptFromPanel(panel) {
-    log('Extracting transcript from side panel...');
+    log('Extracting data from side panel...');
 
-    // First, try to find and click the "Transcript" tab if needed
-    // Look for Material Design tab: div[role="tab"] with text "Transcript"
+    // STEP 1: Extract metadata from Overview tab (BEFORE switching tabs!)
+    log('Step 1: Extracting metadata from Overview tab...');
+    const metadata = extractMetadataFromOverviewTab();
+
+    // STEP 2: Find and click the "Transcript" tab
+    log('Step 2: Looking for Transcript tab...');
     const allTabs = document.querySelectorAll('[role="tab"]');
     let transcriptTab = null;
 
@@ -401,27 +421,25 @@
 
         if (!isActive) {
           transcriptTab = tab;
-          log(`Found Transcript tab (inactive): ${tab.className}`);
+          log(`  Found Transcript tab (inactive): ${tab.className}`);
         } else {
-          log('Transcript tab already active');
+          log('  Transcript tab already active');
         }
         break;
       }
     }
 
     if (transcriptTab) {
-      log('Clicking Transcript tab...');
+      log('  Clicking Transcript tab...');
       transcriptTab.click();
       await sleep(2000); // Wait for tab content to load
     } else {
-      // Tab might already be active, wait a bit anyway
+      log('  ⚠️  Transcript tab not found or already active');
       await sleep(500);
     }
 
-    // Get metadata from the panel
-    const metadata = extractMetadataFromPanel(panel);
-
-    // Scrape transcript directly from DOM (no clipboard needed!)
+    // STEP 3: Scrape transcript directly from DOM
+    log('Step 3: Scraping transcript from DOM...');
     const transcriptLines = scrapeTranscriptFromDOM();
 
     if (transcriptLines.length === 0) {
@@ -466,6 +484,9 @@
     md += `- **Date:** ${data.meetingDate}\n`;
     if (data.attendees) {
       md += `- **Attendees:** ${data.attendees}\n`;
+    }
+    if (data.account) {
+      md += `- **Account:** ${data.account}\n`;
     }
     md += `- **Recording / Source:** Chorus.ai\n`;
     md += `- **Language:** English\n\n`;
