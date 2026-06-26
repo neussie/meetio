@@ -1,24 +1,46 @@
 # Meetio 🎯
 
-**Export Zoom meeting transcripts to markdown with beautiful formatting. One click, all your notes.**
+**Your AI-powered meeting memory. Export Zoom transcripts and supercharge Claude with perfect customer context.**
 
-A Chrome/Edge browser extension that exports all your Zoom meeting notes from [hub.zoom.us/notes](https://hub.zoom.us/notes) into well-formatted markdown files with proper metadata and speaker labels.
+Stop copy-pasting meeting notes into Claude. Stop losing track of customer conversations across Zoom, Chorus, and scattered notes. Meetio exports all your Zoom transcripts in bulk, ready to feed into Claude via Notion for AI-powered customer intelligence.
+
+## 🎯 Why Meetio?
+
+**The Problem:**
+- 😫 Tired of copy-pasting call transcripts into Claude?
+- 🤯 Keeping up with tens of customers, stakeholders, and meetings is overwhelming
+- 🔍 Navigating Zoom and Chorus to find recordings wastes precious time
+- 🧠 Claude's memory can't keep up with all your customer context
+
+**The Solution:**
+Meetio + Notion + Claude = Your AI memory system that never forgets a customer detail.
+
+1. **Meetio Extension**: Download all Zoom transcripts in bulk (one click!)
+2. **Notion Template**: Upload transcripts to a dedicated workspace that maps customers → stakeholders → meetings → tasks
+3. **Claude Integration**: Connect Claude to your Notion, and it has perfect context for every customer interaction
+
+Now you can ask Claude to:
+- ✍️ Write POV documents with full customer context
+- 🎬 Create demo scripts tailored to stakeholder conversations
+- 🔄 Build reverse demo guides based on actual customer needs
+- 📊 Generate account summaries from meeting history
 
 ## ✨ Features
 
-- **Bulk Export**: Export all your Zoom meeting notes in one click
-- **Beautiful Formatting**: Clean markdown with metadata headers and speaker timestamps
+- **Bulk Export**: Download all your Zoom meeting notes in one click
+- **Beautiful Formatting**: Clean markdown with metadata, speaker labels, and timestamps
 - **Smart Parsing**: Automatically extracts meeting names, dates, and attendees
-- **Zero Configuration**: Just install and click the export button
+- **Zero Configuration**: Install and click—no setup required
 - **Privacy First**: All processing happens locally in your browser
+- **Notion-Ready**: Output format designed to integrate seamlessly with Notion databases
 
-## 📦 Installation
+## 🚀 Quick Start (Complete Setup)
 
-### From Source (Development)
+### Step 1: Install Meetio Browser Extension
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/meetio.git
+   git clone https://github.com/neussie/meetio.git
    cd meetio
    ```
 
@@ -26,41 +48,95 @@ A Chrome/Edge browser extension that exports all your Zoom meeting notes from [h
    - Open `chrome://extensions/` (or `edge://extensions/`)
    - Enable "Developer mode" (toggle in top right)
    - Click "Load unpacked"
-   - Select the `meetio` folder
+   - Select the `meetio` folder from your clone
 
 3. Navigate to [hub.zoom.us/notes](https://hub.zoom.us/notes)
 
-4. Click the "📚 Export All Notes" button that appears in the bottom right
+4. Click the **"📚 Export All Notes"** button that appears in the bottom right
 
-## 🚀 Usage
+### Step 2: Set Up Notion Template
+
+1. **Get the Notion template**: [Harness Meeting Intelligence Template](https://github.com/pvnarp/harness-agentic-skills)
+   - Duplicate the template to your Notion workspace
+   - The template includes databases for:
+     - 📊 **Customers**: Track all your accounts
+     - 👥 **Stakeholders**: Map decision-makers and champions
+     - 📝 **Meeting Notes**: Store all transcripts with auto-linking
+     - ✅ **Tasks**: Action items extracted from meetings
+
+2. **Upload your transcripts**:
+   - Drag and drop the markdown files exported by Meetio
+   - Notion will automatically parse metadata and create relationships
+
+### Step 3: Connect Claude to Your Notion
+
+1. **Enable Notion integration** in Claude:
+   - Go to Claude settings
+   - Connect your Notion workspace
+   - Grant access to your Meeting Intelligence database
+
+2. **Start using your AI memory**:
+   ```
+   "Claude, based on my meetings with Acme Corp, draft a POV for their migration project"
+   
+   "Claude, summarize all conversations with John from TechCo and create a demo script"
+   
+   "Claude, what are the main pain points discussed across my financial services customers?"
+   ```
+
+Claude now has perfect context from every customer conversation! 🎉
+
+## 📖 Daily Usage
+
+### Export Your Zoom Transcripts
 
 1. Go to your Zoom notes: [hub.zoom.us/notes](https://hub.zoom.us/notes)
 2. Wait for the sidebar with your notes list to load
 3. Click the **"📚 Export All Notes"** button in the bottom right corner
 4. Confirm the export (if you have more than 5 notes)
-5. Your markdown files will download automatically!
+5. Your markdown files download automatically!
 
-Each exported file includes:
-- Meeting title
-- Date
-- Attendees (extracted from title)
-- Full transcript with speaker names and timestamps
+### Upload to Notion
 
-### Example Output
+1. Open your **Meeting Intelligence** workspace in Notion
+2. Navigate to the **"Meeting Notes"** database
+3. Drag and drop all exported `.md` files
+4. Notion automatically:
+   - Parses metadata (date, attendees, title)
+   - Links to customers and stakeholders
+   - Extracts action items
+
+### Ask Claude Anything
+
+With Claude connected to your Notion:
+
+```
+💬 "Claude, create a POV for Acme Corp's CI/CD modernization based on our last 3 calls"
+
+💬 "Claude, what commitments did we make to TechCo in our June meetings?"
+
+💬 "Claude, draft a reverse demo guide for FinanceCorp focusing on security topics they mentioned"
+
+💬 "Claude, summarize key objections from all healthcare customers this quarter"
+```
+
+### Example Export Format
+
+Each exported file is Notion-ready with structured metadata:
 
 ```markdown
 ## ✧ Metadata
-- **Meeting Title:** Team Sync
+- **Meeting Title:** Acme Corp - POV Kickoff
 - **Date:** 2026-06-24
-- **Attendees:** Alice, Bob
+- **Attendees:** Sarah Chen, Michael Torres, Neus Escruela
 - **Recording / Source:** Zoom My Notes
 - **Language:** English
 
 ## ✧ Transcript
 
-**Alice** (11:31:23): Good morning everyone!
-**Bob** (11:31:25): Hey Alice, ready for the demo?
-**Alice** (11:31:30): Absolutely, let's dive in.
+**Sarah Chen** (11:31:23): We're currently using Jenkins and it's becoming a maintenance nightmare.
+**Michael Torres** (11:31:45): The security team is also concerned about our artifact scanning process.
+**Neus Escruela** (11:32:10): Let me show you how Harness can address both of those pain points...
 ```
 
 ## 🛠️ Development
@@ -143,10 +219,24 @@ MIT License - see [LICENSE](LICENSE) for details
 - Email: neus.escruela@harness.io
 - GitHub: [@neussie](https://github.com/neussie)
 
+## 🔗 Related Projects
+
+- **[Harness Meeting Intelligence Template](https://github.com/pvnarp/harness-agentic-skills)**: The Notion template that powers your AI memory system
+- **[Harness Skills](https://github.com/harness/harness-skills)**: Additional Claude skills for sales engineers and customer success teams
+
+## 💡 Pro Tips
+
+- **Export weekly**: Make it a Friday ritual to export and upload the week's meetings
+- **Tag strategically**: Use Notion tags for customer stages (POV, POC, Production) to help Claude understand context
+- **Link stakeholders**: Connect meeting attendees to stakeholder profiles for relationship mapping
+- **Ask specific questions**: The more context Claude has, the better. Reference customer names, dates, or topics for precise answers
+
 ## 🙏 Acknowledgments
 
-Built with ☕ for the Harness.io team and anyone who needs their Zoom notes in a portable format.
+Built with ☕ by the Harness.io SE team for anyone managing complex customer relationships at scale.
+
+Special thanks to the team behind the Notion template integration that makes this workflow possible.
 
 ---
 
-**Note**: This extension is not affiliated with or endorsed by Zoom Video Communications, Inc.
+**Note**: This extension is not affiliated with or endorsed by Zoom Video Communications, Inc. or Notion Labs, Inc.
