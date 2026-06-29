@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Open Chorus.ai
   openChorusButton.addEventListener('click', () => {
     chrome.tabs.create({
-      url: 'https://app.chorus.ai/'
+      url: 'https://chorus.ai/home'
     });
   });
 
