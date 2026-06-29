@@ -482,20 +482,40 @@
    * Close the side panel
    */
   async function closeSidePanel() {
-    // Look for close button (X icon)
-    const closeButton = document.querySelector('[class*="close"], [aria-label*="close" i], [aria-label*="Close" i]');
+    log('Attempting to close side panel...');
 
-    if (closeButton) {
-      log('Closing side panel...');
-      closeButton.click();
-      await sleep(500);
-    } else {
-      // Click outside the panel to close it
-      log('Clicking outside panel to close...');
-      const overlay = document.querySelector('[class*="overlay"]') || document.body;
-      overlay.click();
-      await sleep(500);
+    // Method 1: Look for close button with various selectors
+    const closeSelectors = [
+      'button[aria-label*="close" i]',
+      'button[aria-label*="Close"]',
+      '[class*="close-button"]',
+      '[class*="closeButton"]',
+      'button[class*="close"]',
+      '[role="button"][class*="close"]',
+      'button > svg[class*="close"]',
+      'button:has(svg[class*="close"])'
+    ];
+
+    for (const selector of closeSelectors) {
+      try {
+        const closeButton = document.querySelector(selector);
+        if (closeButton && closeButton.offsetParent !== null) { // Check if visible
+          log(`  Found close button: ${selector}`);
+          closeButton.click();
+          await sleep(1000);
+          log('  ✓ Panel closed');
+          return;
+        }
+      } catch (e) {
+        // Continue to next selector
+      }
     }
+
+    // Method 2: Press Escape key
+    log('  Trying Escape key...');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+    await sleep(1000);
+    log('  ✓ Pressed Escape');
   }
 
   /**
@@ -605,7 +625,7 @@
         await closeSidePanel();
 
         // Wait before next meeting
-        if (i < meetingLinks.length - 1) {
+        if (i < meetingCards.length - 1) {
           await sleep(1500);
         }
 
