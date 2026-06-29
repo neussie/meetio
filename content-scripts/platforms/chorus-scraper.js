@@ -183,30 +183,43 @@
     let attendees = '';
     let account = '';
 
-    // Find title - big heading at top of panel (look inside panel only, not page header)
-    const panel = document.querySelector('[class*="preview"]') ||
-                  document.querySelector('[class*="panel"]') ||
-                  document.querySelector('[class*="drawer"]') ||
-                  document.querySelector('aside');
+    // Find title - look for meeting title in the overview content
+    // In Chorus, the title is often in the format "Company Name <> Topic"
+    // Example: "Harness <> VMO2: Technology Overview"
 
-    const titleSelectors = ['h1', 'h2', 'h3'];
-    const searchArea = panel || document;
+    const bodyText = document.body.innerText;
 
-    for (const sel of titleSelectors) {
-      const els = searchArea.querySelectorAll(sel);
-      for (const el of els) {
-        const text = el.textContent.trim();
-        // Skip navigation titles, calendar headers, and tabs
-        if (text.length > 10 && text.length < 200 &&
-            !text.match(/^(Chorus|Home|Overview|Comments|Transcript|June|July|August|September|October|November|December)/) &&
-            !text.match(/\d{4}/) && // Skip "2026", "June - July, 2026"
-            !text.includes(' - ')) { // Skip "June - July"
-          title = text;
-          log(`✓ Title: ${title}`);
-          break;
+    // Method 1: Look for pattern "Text <> Text" which is Chorus's format for meeting titles
+    const titleMatch = bodyText.match(/([A-Za-z0-9\s&,.-]+)\s*<>\s*([A-Za-z0-9\s:&,.-]+)/);
+    if (titleMatch) {
+      title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()}`;
+      log(`✓ Title (from <> pattern): ${title}`);
+    } else {
+      // Method 2: Look in headings within side panel
+      const panel = document.querySelector('[class*="preview"]') ||
+                    document.querySelector('[class*="panel"]') ||
+                    document.querySelector('[class*="drawer"]') ||
+                    document.querySelector('aside');
+
+      const titleSelectors = ['h1', 'h2', 'h3'];
+      const searchArea = panel || document;
+
+      for (const sel of titleSelectors) {
+        const els = searchArea.querySelectorAll(sel);
+        for (const el of els) {
+          const text = el.textContent.trim();
+          // Skip navigation titles, calendar headers, and tabs
+          if (text.length > 10 && text.length < 200 &&
+              !text.match(/^(Chorus|Home|Overview|Comments|Transcript|June|July|August|September|October|November|December)/) &&
+              !text.match(/\d{4}/) && // Skip "2026", "June - July, 2026"
+              !text.includes(' - ')) { // Skip "June - July"
+            title = text;
+            log(`✓ Title (from heading): ${title}`);
+            break;
+          }
         }
+        if (title !== 'Unknown Meeting') break;
       }
-      if (title !== 'Unknown Meeting') break;
     }
 
     // Find "Meeting Date: Jun 22, 2026"
@@ -620,9 +633,26 @@
           // Create filename - use a fallback if title extraction failed
           let safeTitle = data.title;
           if (safeTitle === 'Unknown Meeting' || safeTitle.includes('June') || safeTitle.includes('July')) {
-            // Fallback: use meeting card text as title
-            const fallbackTitle = cardText.replace(/\d{1,2}:\d{2}\s*(AM|PM)/g, '').trim();
-            safeTitle = fallbackTitle || `Meeting-${i + 1}`;
+            // Fallback: extract clean title from meeting card text
+            // Card format: "Time\nTitle\nno show Harness <> Topic\nMeeting Recap\nParticipant +N"
+            let fallbackTitle = cardText;
+
+            // Remove time stamps (12:00 PM, 4:00 PM, etc)
+            fallbackTitle = fallbackTitle.replace(/\d{1,2}:\d{2}\s*(AM|PM)/gi, '');
+
+            // Remove "Meeting Recap" / "Meeting Brief"
+            fallbackTitle = fallbackTitle.replace(/Meeting\s+(Recap|Brief)/gi, '');
+
+            // Remove participant info (Name +N)
+            fallbackTitle = fallbackTitle.replace(/[A-Z][a-z]+\s+[A-Z][a-z]+\s+\+\d+/g, '');
+
+            // Remove "no show" text
+            fallbackTitle = fallbackTitle.replace(/no\s+show/gi, '');
+
+            // Clean up whitespace and get first meaningful line
+            const lines = fallbackTitle.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+            safeTitle = lines[0] || `Meeting-${i + 1}`;
+
             log(`  ⚠️  Using fallback title: ${safeTitle}`);
           }
 
