@@ -183,50 +183,37 @@
     let attendees = '';
     let account = '';
 
-    // Find title - look for meeting title in the overview content
-    // Chorus uses various formats: "Company - Company | Topic" or "Company <> Topic"
-    // Examples: "Harness - FNZ | Security Demo", "Harness <> VMO2: Technology Overview"
+    // Find title - look for the exact element with class "title"
+    // Chorus format: <a class="title overflow-ellipsis-2-lines" ...>Meeting Title</a>
 
-    const bodyText = document.body.innerText;
+    const titleElement = document.querySelector('a.title.overflow-ellipsis-2-lines') ||
+                         document.querySelector('a.title') ||
+                         document.querySelector('[class*="title"][class*="overflow"]');
 
-    // Method 1: Look for Chorus title patterns
-    // Try pattern: "Text - Text | Text" (e.g., "Harness - FNZ | Security Demo")
-    let titleMatch = bodyText.match(/([A-Za-z0-9\s&,.]+)\s*-\s*([A-Za-z0-9\s&,.]+)\s*\|\s*([A-Za-z0-9\s:&,.]+)/);
-    if (titleMatch) {
-      title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()} - ${titleMatch[3].trim()}`;
-      log(`✓ Title (from - | pattern): ${title}`);
-    }
+    if (titleElement) {
+      title = titleElement.textContent.trim();
+      log(`✓ Title (from .title element): ${title}`);
+    } else {
+      log('⚠️  Could not find title element, searching headings...');
 
-    // Try pattern: "Text <> Text" (older format)
-    if (title === 'Unknown Meeting') {
-      titleMatch = bodyText.match(/([A-Za-z0-9\s&,.]+)\s*<>\s*([A-Za-z0-9\s:&,.]+)/);
-      if (titleMatch) {
-        title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()}`;
-        log(`✓ Title (from <> pattern): ${title}`);
-      }
-    }
-
-    if (title === 'Unknown Meeting') {
-      // Method 2: Look in headings within side panel
+      // Fallback: Look in headings within side panel
       const panel = document.querySelector('[class*="preview"]') ||
                     document.querySelector('[class*="panel"]') ||
                     document.querySelector('[class*="drawer"]') ||
                     document.querySelector('aside');
 
-      const titleSelectors = ['h1', 'h2', 'h3'];
+      const titleSelectors = ['h1', 'h2'];
       const searchArea = panel || document;
 
       for (const sel of titleSelectors) {
         const els = searchArea.querySelectorAll(sel);
         for (const el of els) {
           const text = el.textContent.trim();
-          // Skip navigation titles, calendar headers, and tabs
-          if (text.length > 10 && text.length < 200 &&
-              !text.match(/^(Chorus|Home|Overview|Comments|Transcript|June|July|August|September|October|November|December)/) &&
-              !text.match(/\d{4}/) && // Skip "2026", "June - July, 2026"
-              !text.includes(' - ')) { // Skip "June - July"
+          // Must have reasonable length and not be navigation text
+          if (text.length > 5 && text.length < 200 &&
+              !text.match(/^(Chorus|Home|Overview|Comments|Transcript)$/)) {
             title = text;
-            log(`✓ Title (from heading): ${title}`);
+            log(`✓ Title (from ${sel}): ${title}`);
             break;
           }
         }
