@@ -28,7 +28,7 @@
 
   /**
    * Get all meeting cards/rows from the home page
-   * ONLY meetings with recordings (has "Meeting Recap" badge)
+   * ONLY meetings with recordings (has "Meeting Recap" or "Meeting Brief" badge)
    */
   function getAllMeetingCards() {
     log('Searching for meeting cards with recordings...');
@@ -45,8 +45,8 @@
       if (!text.match(/AM|PM/) && !text.match(/\d{1,2}:\d{2}/)) return false;
       if (text.includes('Sunday') || text.includes('Monday')) return false;
 
-      // CRITICAL: Must have "Meeting Recap" badge (indicates recording exists)
-      if (!text.includes('Meeting Recap')) {
+      // CRITICAL: Must have "Meeting Recap" or "Meeting Brief" badge (indicates recording exists)
+      if (!text.includes('Meeting Recap') && !text.includes('Meeting Brief')) {
         return false;
       }
 
