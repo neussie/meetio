@@ -184,17 +184,29 @@
     let account = '';
 
     // Find title - look for meeting title in the overview content
-    // In Chorus, the title is often in the format "Company Name <> Topic"
-    // Example: "Harness <> VMO2: Technology Overview"
+    // Chorus uses various formats: "Company - Company | Topic" or "Company <> Topic"
+    // Examples: "Harness - FNZ | Security Demo", "Harness <> VMO2: Technology Overview"
 
     const bodyText = document.body.innerText;
 
-    // Method 1: Look for pattern "Text <> Text" which is Chorus's format for meeting titles
-    const titleMatch = bodyText.match(/([A-Za-z0-9\s&,.-]+)\s*<>\s*([A-Za-z0-9\s:&,.-]+)/);
+    // Method 1: Look for Chorus title patterns
+    // Try pattern: "Text - Text | Text" (e.g., "Harness - FNZ | Security Demo")
+    let titleMatch = bodyText.match(/([A-Za-z0-9\s&,.]+)\s*-\s*([A-Za-z0-9\s&,.]+)\s*\|\s*([A-Za-z0-9\s:&,.]+)/);
     if (titleMatch) {
-      title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()}`;
-      log(`✓ Title (from <> pattern): ${title}`);
-    } else {
+      title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()} - ${titleMatch[3].trim()}`;
+      log(`✓ Title (from - | pattern): ${title}`);
+    }
+
+    // Try pattern: "Text <> Text" (older format)
+    if (title === 'Unknown Meeting') {
+      titleMatch = bodyText.match(/([A-Za-z0-9\s&,.]+)\s*<>\s*([A-Za-z0-9\s:&,.]+)/);
+      if (titleMatch) {
+        title = `${titleMatch[1].trim()} - ${titleMatch[2].trim()}`;
+        log(`✓ Title (from <> pattern): ${title}`);
+      }
+    }
+
+    if (title === 'Unknown Meeting') {
       // Method 2: Look in headings within side panel
       const panel = document.querySelector('[class*="preview"]') ||
                     document.querySelector('[class*="panel"]') ||
