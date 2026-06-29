@@ -1,87 +1,76 @@
-body {
-  width: 360px;
-  min-height: 400px;
+* {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  width: 400px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
   font-size: 14px;
-  color: #1f2937;
-  background: #ffffff;
+  color: #1F2937;
+  background: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  min-height: 500px;
 }
 
+/* Header */
 header {
-  background: linear-gradient(135deg, #00B8E6 0%, #0099CC 100%);
-  color: white;
-  padding: 20px;
-  text-align: center;
+  padding: 20px 20px 16px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #F3F4F6;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 20px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-size: 18px;
   font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
-header .subtitle {
-  margin: 4px 0 0 0;
-  font-size: 13px;
-  opacity: 0.9;
-}
-
-main {
-  flex: 1;
-  padding: 20px;
-}
-
-section {
-  margin-bottom: 20px;
-}
-
-section:last-child {
-  margin-bottom: 0;
-}
-
-.status {
-  text-align: center;
+.brand-text p {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.3;
+  margin-top: 2px;
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.status-ready {
+  gap: 6px;
+  padding: 6px 12px;
   background: #ECFDF5;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
   color: #059669;
 }
 
-.status-working {
-  background: #FEF3C7;
-  color: #D97706;
-}
-
-.status-error {
-  background: #FEE2E2;
-  color: #DC2626;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: pulse 2s infinite;
+.status-badge svg {
+  color: #10B981;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
@@ -89,101 +78,171 @@ section:last-child {
   50% { opacity: 0.5; }
 }
 
-.instructions h3 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
+/* Main Content */
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.welcome h2 {
+  font-size: 16px;
   font-weight: 600;
-  color: #374151;
+  color: #111827;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
 }
 
-.instructions ol {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.instructions li {
-  margin-bottom: 8px;
-  line-height: 1.5;
-}
-
-.instructions a {
-  color: #00B8E6;
-  text-decoration: none;
-}
-
-.instructions a:hover {
-  text-decoration: underline;
-}
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.button {
-  width: 100%;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.button-primary {
-  background: #00B8E6;
-  color: white;
-}
-
-.button-primary:hover {
-  background: #0099CC;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 184, 230, 0.3);
-}
-
-.button-secondary {
-  background: #F3F4F6;
-  color: #374151;
-}
-
-.button-secondary:hover {
-  background: #E5E7EB;
-}
-
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.info {
-  padding: 12px;
-  background: #F9FAFB;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-}
-
-.note {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
+.welcome p {
+  font-size: 13px;
   color: #6B7280;
 }
 
-.note strong {
-  color: #374151;
+/* Platform Cards */
+.platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-footer {
+.platform-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 16px;
-  text-align: center;
-  border-top: 1px solid #E5E7EB;
-  background: #F9FAFB;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
 }
 
-footer p {
+.platform-card:hover {
+  border-color: #00B8E6;
+  background: #F9FAFB;
+  box-shadow: 0 4px 16px rgba(0, 184, 230, 0.08);
+  transform: translateY(-2px);
+}
+
+.platform-card:active {
+  transform: translateY(0);
+}
+
+.platform-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.platform-icon {
+  flex-shrink: 0;
+}
+
+.platform-title h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.platform-subtitle {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.3;
+  display: block;
+  margin-top: 2px;
+}
+
+.platform-desc {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.5;
   margin: 0;
+}
+
+.platform-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #00B8E6;
+}
+
+.platform-action svg {
+  color: #00B8E6;
+  transition: transform 0.2s ease;
+}
+
+.platform-card:hover .platform-action svg {
+  transform: translateX(2px);
+}
+
+/* Quick Info */
+.quick-info {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid #F3F4F6;
+}
+
+.quick-info svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.quick-info p {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #F3F4F6;
+  background: #FAFAFA;
+}
+
+.settings-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-link:hover {
+  background: #F3F4F6;
+  color: #111827;
+}
+
+.settings-link svg {
+  color: currentColor;
+}
+
+.version {
   font-size: 11px;
   color: #9CA3AF;
+  font-weight: 500;
 }

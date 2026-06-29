@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const openZoomButton = document.getElementById('open-zoom');
+  const openChorusButton = document.getElementById('open-chorus');
   const openSettingsButton = document.getElementById('open-settings');
   const statusText = document.getElementById('status-text');
   const statusIndicator = document.getElementById('status-indicator');
@@ -15,17 +16,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Open Chorus.ai
+  openChorusButton.addEventListener('click', () => {
+    chrome.tabs.create({
+      url: 'https://app.chorus.ai/'
+    });
+  });
+
   // Open settings page
   openSettingsButton.addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
   });
 
-  // Check if we're on Zoom notes page
+  // Check if we're on a supported page
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
-    if (currentTab && currentTab.url && currentTab.url.includes('hub.zoom.us/notes')) {
-      statusIndicator.className = 'status-badge status-ready';
-      statusText.textContent = 'On Zoom Notes page';
+    const statusBadge = document.getElementById('status-badge');
+
+    if (currentTab && currentTab.url) {
+      if (currentTab.url.includes('hub.zoom.us/notes')) {
+        statusText.textContent = 'On Zoom';
+      } else if (currentTab.url.includes('chorus.ai')) {
+        statusText.textContent = 'On Chorus.ai';
+      } else {
+        statusText.textContent = 'Ready';
+      }
     }
   });
 });
