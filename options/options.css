@@ -53,7 +53,7 @@ header .subtitle {
 }
 
 .description a {
-  color: #2D8CFF;
+  color: #00B8E6;
   text-decoration: none;
 }
 
@@ -92,8 +92,8 @@ input[type="password"] {
 input[type="text"]:focus,
 input[type="password"]:focus {
   outline: none;
-  border-color: #2D8CFF;
-  box-shadow: 0 0 0 3px rgba(45, 140, 255, 0.1);
+  border-color: #00B8E6;
+  box-shadow: 0 0 0 3px rgba(0, 184, 230, 0.1);
 }
 
 .hint {
@@ -104,7 +104,7 @@ input[type="password"]:focus {
 }
 
 .hint a {
-  color: #2D8CFF;
+  color: #00B8E6;
   text-decoration: none;
 }
 
@@ -136,14 +136,14 @@ input[type="password"]:focus {
 }
 
 .button-primary {
-  background: #2D8CFF;
+  background: #00B8E6;
   color: white;
 }
 
 .button-primary:hover {
-  background: #1E7BE5;
+  background: #0099CC;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45, 140, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 184, 230, 0.3);
 }
 
 .button-secondary {
@@ -191,7 +191,7 @@ input[type="password"]:focus {
 }
 
 .instructions a {
-  color: #2D8CFF;
+  color: #00B8E6;
   text-decoration: none;
 }
 

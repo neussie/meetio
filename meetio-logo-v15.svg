@@ -1,0 +1,16 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGradient15" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00B8E6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099CC;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="45" fill="url(#blueGradient15)"/>
+
+  <!-- Rounded stripe M - like ribbons -->
+  <g stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 50 143 L 50 58 L 100 113 L 150 58 L 150 143"/>
+  </g>
+</svg>

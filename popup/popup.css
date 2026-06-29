@@ -16,7 +16,7 @@ body {
 }
 
 header {
-  background: linear-gradient(135deg, #2D8CFF 0%, #1E7BE5 100%);
+  background: linear-gradient(135deg, #00B8E6 0%, #0099CC 100%);
   color: white;
   padding: 20px;
   text-align: center;
@@ -107,7 +107,7 @@ section:last-child {
 }
 
 .instructions a {
-  color: #2D8CFF;
+  color: #00B8E6;
   text-decoration: none;
 }
 
@@ -133,14 +133,14 @@ section:last-child {
 }
 
 .button-primary {
-  background: #2D8CFF;
+  background: #00B8E6;
   color: white;
 }
 
 .button-primary:hover {
-  background: #1E7BE5;
+  background: #0099CC;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45, 140, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 184, 230, 0.3);
 }
 
 .button-secondary {

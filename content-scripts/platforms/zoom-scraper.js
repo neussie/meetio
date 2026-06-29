@@ -328,24 +328,24 @@
       right: 20px;
       z-index: 10000;
       padding: 14px 24px;
-      background: #2D8CFF;
+      background: #00B8E6;
       color: white;
       border: none;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(45, 140, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 184, 230, 0.3);
       transition: all 0.2s;
     `;
 
     button.addEventListener('mouseenter', () => {
-      button.style.background = '#1E7BE5';
+      button.style.background = '#0099CC';
       button.style.transform = 'translateY(-2px)';
     });
 
     button.addEventListener('mouseleave', () => {
-      button.style.background = '#2D8CFF';
+      button.style.background = '#00B8E6';
       button.style.transform = 'translateY(0)';
     });
 
