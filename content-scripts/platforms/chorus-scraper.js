@@ -183,15 +183,24 @@
     let attendees = '';
     let account = '';
 
-    // Find title - big heading at top of panel
+    // Find title - big heading at top of panel (look inside panel only, not page header)
+    const panel = document.querySelector('[class*="preview"]') ||
+                  document.querySelector('[class*="panel"]') ||
+                  document.querySelector('[class*="drawer"]') ||
+                  document.querySelector('aside');
+
     const titleSelectors = ['h1', 'h2', 'h3'];
+    const searchArea = panel || document;
+
     for (const sel of titleSelectors) {
-      const els = document.querySelectorAll(sel);
+      const els = searchArea.querySelectorAll(sel);
       for (const el of els) {
         const text = el.textContent.trim();
-        // Skip navigation titles
+        // Skip navigation titles, calendar headers, and tabs
         if (text.length > 10 && text.length < 200 &&
-            !text.match(/^(Chorus|Home|Overview|Comments|Transcript)$/)) {
+            !text.match(/^(Chorus|Home|Overview|Comments|Transcript|June|July|August|September|October|November|December)/) &&
+            !text.match(/\d{4}/) && // Skip "2026", "June - July, 2026"
+            !text.includes(' - ')) { // Skip "June - July"
           title = text;
           log(`✓ Title: ${title}`);
           break;
@@ -608,17 +617,28 @@
           // Generate markdown
           const markdown = generateMarkdown(data);
 
-          // Create filename
-          const filename = `${data.meetingDate}_${slugify(data.title)}.md`;
+          // Create filename - use a fallback if title extraction failed
+          let safeTitle = data.title;
+          if (safeTitle === 'Unknown Meeting' || safeTitle.includes('June') || safeTitle.includes('July')) {
+            // Fallback: use meeting card text as title
+            const fallbackTitle = cardText.replace(/\d{1,2}:\d{2}\s*(AM|PM)/g, '').trim();
+            safeTitle = fallbackTitle || `Meeting-${i + 1}`;
+            log(`  ⚠️  Using fallback title: ${safeTitle}`);
+          }
+
+          const filename = `${data.meetingDate}_${slugify(safeTitle)}.md`;
 
           // Download
           downloadFile(filename, markdown);
 
           log(`  ✓ Downloaded: ${filename}`);
-          results.push({ success: true, title: data.title });
+          results.push({ success: true, title: safeTitle });
         } else {
           log(`  ✗ No transcript found`);
-          results.push({ success: false, title: cardText });
+          if (data) {
+            log(`  Debug: title="${data.title}", transcriptLines=${data.transcriptLines?.length || 0}`);
+          }
+          results.push({ success: false, title: cardText, reason: 'No transcript' });
         }
 
         // Close the side panel before moving to next
