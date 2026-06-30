@@ -227,16 +227,6 @@ Extract patterns and insights across multiple customer conversations.
 
 ---
 
-## 📸 Screenshots
-
-<div align="center">
-  <img src="./docs/screenshot-popup.png" alt="Meetio Extension Popup" width="400">
-  <br/>
-  <em>Clean, modern extension interface</em>
-</div>
-
----
-
 ## 🏗️ Project Structure
 
 ```
