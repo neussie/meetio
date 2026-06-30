@@ -5,9 +5,8 @@
   
   **Your AI memory system for sales engineers**
   
-  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-  [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)](https://github.com/neussie/meetio)
-  [![Made with ❤️ by Harness SE](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20by-Harness%20SE-orange.svg)](https://harness.io)
+  [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-00B8E6.svg)](https://github.com/neussie/meetio)
+  [![Made for Harness SE](https://img.shields.io/badge/Made%20for-Harness%20SE-orange.svg)](https://harness.io)
   
   Never forget a customer detail again.
   
@@ -274,9 +273,6 @@ Meetio is extensible by design. To add support for new platforms (Gong, Saleslof
 
 See [zoom-scraper.js](./content-scripts/platforms/zoom-scraper.js) for reference implementation.
 
-### Contributing
-
-Contributions welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting PRs.
 
 ---
 
@@ -371,13 +367,6 @@ Solutions Engineer @ Harness.io
 
 ---
 
-## 🙏 Acknowledgments
-
-Built with ☕ by the Harness SE team for anyone managing complex customer relationships at scale.
-
-**Fills the Granola-shaped gap** - Meeting intelligence that legal can actually approve.
-
----
 
 <div align="center">
   
@@ -385,7 +374,7 @@ Built with ☕ by the Harness SE team for anyone managing complex customer relat
   
   ⭐ Star this repo if Meetio helps you ship faster!
   
-  [Get Started](#-quick-start) • [Report Bug](https://github.com/neussie/meetio/issues) • [Request Feature](https://github.com/neussie/meetio/issues)
+  [Get Started](#-quick-start)
   
 </div>
 
