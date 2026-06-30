@@ -1,300 +1,394 @@
-# Meetio 🎯
+<div align="center">
+  <img src="./icons/icon-128.png" alt="Meetio Logo" width="120" height="120">
+  
+  # Meetio
+  
+  **Your AI memory system for sales engineers**
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+  [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)](https://github.com/neussie/meetio)
+  [![Made with ❤️ by Harness SE](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20by-Harness%20SE-orange.svg)](https://harness.io)
+  
+  Never forget a customer detail again.
+  
+  [Quick Start](#-quick-start) • [Features](#-features) • [How It Works](#-how-it-works) • [Download Template](./SE_SecondBrain_Notion.zip)
+  
+</div>
 
-**Your AI-powered meeting memory. Export Zoom and Chorus.ai transcripts and supercharge Claude with perfect customer context.**
+---
 
-Stop copy-pasting meeting notes into Claude. Stop losing track of customer conversations across Zoom, Chorus, and scattered notes. Meetio exports transcripts from **Zoom Notes** and **Chorus.ai** in bulk, ready to feed into Claude via Notion for AI-powered customer intelligence.
+## 🎯 The Problem
 
-## 🎯 Why Meetio?
+Sales Engineers are drowning in context:
 
-**The Problem:**
-- 😫 Tired of copy-pasting call transcripts into Claude?
-- 🤯 Keeping up with tens of customers, stakeholders, and meetings is overwhelming
-- 🔍 Navigating Zoom and Chorus to find recordings wastes precious time
-- 🧠 Claude's memory can't keep up with all your customer context
+<table>
+<tr>
+<td width="25%" align="center">
+  <h3>😫</h3>
+  <strong>Endless copy-paste</strong><br/>
+  Pasting call transcripts into Claude, one at a time
+</td>
+<td width="25%" align="center">
+  <h3>🤯</h3>
+  <strong>Too many threads</strong><br/>
+  Tens of customers, stakeholders, and meetings to track
+</td>
+<td width="25%" align="center">
+  <h3>🔍</h3>
+  <strong>Lost recordings</strong><br/>
+  Hunting through Zoom and Chorus wastes precious time
+</td>
+<td width="25%" align="center">
+  <h3>🧠</h3>
+  <strong>Claude forgets</strong><br/>
+  Context resets every conversation
+</td>
+</tr>
+</table>
 
-**The Solution:**
-Meetio + Notion + Claude = Your AI memory system that never forgets a customer detail.
+## 💡 The Solution
 
-1. **Meetio Extension**: Download all Zoom transcripts in bulk (one click!)
-2. **Notion Template** ([download here](./SE_SecondBrain_Notion.zip)): Upload transcripts to a dedicated workspace that maps customers → stakeholders → meetings → tasks
-3. **Claude Integration**: Connect Claude to your Notion, and it has perfect context for every customer interaction
+**An AI memory that never forgets a customer**
 
-Now you can ask Claude to:
-- ✍️ Write POV documents with full customer context
-- 🎬 Create demo scripts tailored to stakeholder conversations
-- 🔄 Build reverse demo guides based on actual customer needs
-- 📊 Generate account summaries from meeting history
+Meetio turns every Zoom and Chorus call into searchable memory your AI can actually use.
+
+```
+📥 Meetio → 🗂️ Notion → 🤖 Claude
+```
+
+One hub for every customer conversation. Zero copy-paste. Perfect context every time.
 
 ## ✨ Features
 
-- **Multi-Platform Support**: Export from **Zoom Notes** and **Chorus.ai**
-- **Bulk Export**: Download all your Zoom meeting notes in one click
-- **Beautiful Formatting**: Clean markdown with metadata, speaker labels, and timestamps
-- **Smart Parsing**: Automatically extracts meeting names, dates, and attendees
-- **Zero Configuration**: Install and click—no setup required
-- **Privacy First**: All processing happens locally in your browser
-- **Notion-Ready**: Output format designed to integrate seamlessly with Notion databases
+<table>
+<tr>
+<td width="33%">
 
-## 🚀 Quick Start (Complete Setup)
+### 🚀 One-Click Export
+Bulk download all your Zoom Notes and Chorus.ai transcripts as clean markdown files
 
-### Step 1: Install Meetio Browser Extension
+</td>
+<td width="33%">
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/neussie/meetio.git
-   cd meetio
-   ```
+### 🔒 Privacy First
+Every transcript is parsed locally in your browser. Nothing leaves your machine.
 
-2. Load the extension in Chrome/Edge:
-   - Open `chrome://extensions/` (or `edge://extensions/`)
-   - Enable "Developer mode" (toggle in top right)
-   - Click "Load unpacked"
-   - Select the **entire `meetio` folder** (the root, not a subfolder)
+</td>
+<td width="33%">
 
-3. Navigate to [hub.zoom.us/notes](https://hub.zoom.us/notes)
+### 🎯 Zero Config
+Install the extension and go. No API keys, no setup, no hassle.
 
-4. Click the **"📚 Export All Notes"** button that appears in the bottom right
+</td>
+</tr>
+<tr>
+<td width="33%">
 
-### Step 2: Set Up Notion Template
+### 📊 Smart Parsing
+Automatically extracts meeting titles, dates, attendees, and conversation flow
 
-1. **Get the Notion template**: [Download SE_SecondBrain_Notion.zip](./SE_SecondBrain_Notion.zip)
-   - Import the template to your Notion workspace
-   - The template includes databases for:
-     - 📊 **Customers**: Track all your accounts
-     - 👥 **Stakeholders**: Map decision-makers and champions
-     - 📝 **Meeting Notes**: Store all transcripts with auto-linking
-     - ✅ **Tasks**: Action items extracted from meetings
+</td>
+<td width="33%">
 
-2. **Process transcripts with Claude**:
-   - Connect Claude to your Notion workspace
-   - Upload the markdown files to Claude
-   - Ask Claude to populate the Notion databases with meeting information
-   - Claude will parse metadata and create proper relationships between customers, stakeholders, and meetings
+### 🔗 Notion Ready
+Structured markdown designed for Claude to process into your knowledge base
 
-### Step 3: Connect Claude to Your Notion
+</td>
+<td width="33%">
 
-1. **Enable Notion integration** in Claude:
-   - Go to Claude settings
-   - Connect your Notion workspace
-   - Grant access to your Meeting Intelligence database
+### 🔄 Extensible
+Built for Zoom & Chorus today. Designed for complete automation tomorrow.
 
-2. **Start using your AI memory**:
-   ```
-   "Claude, based on my meetings with Acme Corp, draft a POV for their migration project"
-   
-   "Claude, summarize all conversations with John from TechCo and create a demo script"
-   
-   "Claude, what are the main pain points discussed across my financial services customers?"
-   ```
+</td>
+</tr>
+</table>
 
-Claude now has perfect context from every customer conversation! 🎉
+## 🚀 Quick Start
 
-## 📖 Daily Usage
+### 1️⃣ Install the Extension
 
-### Export from Zoom Notes
-
-1. Go to your Zoom notes: [hub.zoom.us/notes](https://hub.zoom.us/notes)
-2. Wait for the sidebar with your notes list to load
-3. Click the **"📚 Export All Notes"** button in the bottom right corner
-4. Confirm the export (if you have more than 5 notes)
-5. Your markdown files download automatically!
-
-### Export from Chorus.ai
-
-1. Go to a meeting detail page on [chorus.ai](https://chorus.ai)
-2. Make sure the transcript is visible on the page
-3. Click the **"📚 Export to Markdown"** button in the bottom right corner
-4. Your markdown file downloads automatically!
-
-**Note**: Chorus scraper works on individual meeting pages. For bulk export, navigate to each meeting you want to export.
-
-### Process Transcripts with Claude
-
-1. **Connect Claude to your Notion workspace** (if not already connected)
-   - Go to Claude settings and connect your Notion
-   - Grant access to your Second Brain workspace
-
-2. **Upload transcripts to Claude**:
-   - Attach the exported `.md` files to your Claude conversation
-   - Or place them in a folder Claude can access
-
-3. **Ask Claude to process them**:
-   ```
-   "Claude, I've exported meeting transcripts. Please read the Notion template structure 
-   (Customers, Stakeholders, Meeting Notes databases) and populate them with information 
-   from these transcripts. Create or update customer pages, link stakeholders, and add 
-   the meeting notes with proper relationships."
-   ```
-
-4. Claude will:
-   - Parse metadata (date, attendees, title, customer)
-   - Create/update customer pages in the Customers database
-   - Create/update stakeholder profiles
-   - Add meeting notes to the Meeting Notes database
-   - Link everything together (meetings → customers → stakeholders)
-   - Extract action items and tasks
-
-### Query Your AI Memory
-
-Once Claude has processed your transcripts into Notion, you can ask it anything:
-
-```
-💬 "Claude, create a POV for Acme Corp's CI/CD modernization based on our last 3 calls"
-
-💬 "Claude, what commitments did we make to TechCo in our June meetings?"
-
-💬 "Claude, draft a reverse demo guide for FinanceCorp focusing on security topics they mentioned"
-
-💬 "Claude, summarize key objections from all healthcare customers this quarter"
-
-💬 "Claude, who are the key stakeholders at Virgin Media O2 and what topics have we discussed?"
+```bash
+git clone https://github.com/neussie/meetio.git
+cd meetio
 ```
 
-Claude reads your Notion database and has perfect context from every customer conversation! 🎉
+**Load in Chrome/Edge:**
+1. Open `chrome://extensions/`
+2. Enable "Developer mode" (top right)
+3. Click "Load unpacked"
+4. Select the `meetio` folder
 
-### Example Export Format
+### 2️⃣ Set Up Your Notion Workspace
 
-Each exported file is Notion-ready with structured metadata:
+1. **Download the template**: [SE_SecondBrain_Notion.zip](./SE_SecondBrain_Notion.zip)
+2. **Import to Notion**: Create a new workspace and import the template
+3. **Connect Claude**: Link Claude to your Notion workspace
 
-```markdown
-## ✧ Metadata
-- **Meeting Title:** Acme Corp - POV Kickoff
-- **Date:** 2026-06-24
-- **Attendees:** Sarah Chen, Michael Torres, Neus Escruela
-- **Recording / Source:** Zoom My Notes
-- **Language:** English
+The template includes:
+- 📊 **Customers** database
+- 👥 **Stakeholders** database  
+- 📝 **Meeting Notes** database
+- ✅ **Tasks** tracker
 
-## ✧ Transcript
+### 3️⃣ Export Your First Transcripts
 
-**Sarah Chen** (11:31:23): We're currently using Jenkins and it's becoming a maintenance nightmare.
-**Michael Torres** (11:31:45): The security team is also concerned about our artifact scanning process.
-**Neus Escruela** (11:32:10): Let me show you how Harness can address both of those pain points...
+**For Zoom:**
+1. Go to [hub.zoom.us/notes](https://hub.zoom.us/notes)
+2. Click the **"📚 Export All Meetings"** button
+3. Transcripts download as `.md` files
+
+**For Chorus.ai:**
+1. Go to [chorus.ai/home](https://chorus.ai/home)
+2. Click the **"📚 Export All Meetings"** button
+3. Transcripts download as `.md` files
+
+### 4️⃣ Process with Claude
+
+Upload the markdown files to Claude and ask:
+
+```
+Claude, I've exported meeting transcripts. Please read the Notion 
+template structure and populate the databases with information from 
+these transcripts. Create customer pages, link stakeholders, and 
+organize the meeting notes.
 ```
 
-## 🛠️ Development
+Claude will:
+✅ Parse metadata (dates, attendees, customers)  
+✅ Create/update customer pages  
+✅ Link stakeholders to meetings  
+✅ Organize everything in your Notion workspace  
 
-### Project Structure
+---
+
+## 🎬 How It Works
+
+<div align="center">
+
+### Three steps. One click. Zero copy-paste.
+
+</div>
+
+```mermaid
+graph LR
+    A[🎥 Zoom/Chorus] -->|Export| B[📝 Meetio]
+    B -->|Markdown Files| C[📤 Upload to Claude]
+    C -->|Process| D[🗂️ Notion Database]
+    D -->|Context| E[🤖 Ask Claude Anything]
+```
+
+1. **Extract** - Meetio bulk-exports your calls as clean markdown
+2. **Organize** - Claude processes transcripts into your Notion template
+3. **Query** - Ask Claude anything with perfect customer context
+
+---
+
+## 💬 What You Can Ask Claude
+
+Once your transcripts are in Notion, Claude becomes your account intelligence engine:
+
+<table>
+<tr>
+<td width="50%">
+
+**📄 Generate POV Documents**
+```
+"Draft a POV for Acme's CI/CD modernization 
+from our last three calls"
+```
+
+**🎬 Create Demo Scripts**
+```
+"Write a demo script tailored to what TechCo 
+told us they need"
+```
+
+</td>
+<td width="50%">
+
+**🔄 Build Reverse Demos**
+```
+"Build a reverse-demo guide for FNZ on the 
+security topics Simon raised"
+```
+
+**📊 Analyze Accounts**
+```
+"Summarize top objections across my 
+financial-services accounts"
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="./docs/screenshot-popup.png" alt="Meetio Extension Popup" width="400">
+  <br/>
+  <em>Clean, modern extension interface</em>
+</div>
+
+---
+
+## 🏗️ Project Structure
 
 ```
 meetio/
-├── manifest.json                    # Extension configuration
+├── icons/                    # Extension icons & logo
+├── manifest.json             # Extension configuration
+├── popup/                    # Extension popup UI
+├── options/                  # Settings page
 ├── content-scripts/
-│   ├── platforms/                   # Platform-specific scrapers
-│   │   ├── zoom-scraper.js          # Zoom Notes scraper
-│   │   └── chorus-scraper.js        # Chorus.ai scraper (coming soon)
-│   ├── utils.js                     # Shared utilities (logging, file download)
-│   └── injected-ui.css              # UI styles
+│   ├── platforms/
+│   │   ├── zoom-scraper.js      # Zoom Notes bulk export
+│   │   └── chorus-scraper.js    # Chorus.ai bulk export
+│   ├── utils.js                 # Shared utilities
+│   └── injected-ui.css          # UI styles
 ├── background/
-│   ├── service-worker.js            # Background tasks
-│   └── notion-api.js                # Notion integration (future)
-├── popup/
-│   ├── popup.html                   # Extension popup UI
-│   └── popup.js                     # Popup logic
-├── options/
-│   ├── options.html                 # Settings page
-│   └── options.js                   # Settings logic
-├── icons/                           # Extension icons
-├── samples/                         # Example exports (not in repo)
-├── README.md
-├── CONTRIBUTING.md
-└── LICENSE
+│   └── service-worker.js        # Background tasks
+├── SE_SecondBrain_Notion.zip   # Notion template
+└── README.md
 ```
+
+---
+
+## 🛠️ Development
 
 ### Adding New Platforms
 
-Meetio currently supports:
-- ✅ **Zoom Notes** (hub.zoom.us/notes) - Bulk export
-- ✅ **Chorus.ai** - Individual meeting export
-
-To add support for other platforms (Gong, Salesloft, etc.):
+Meetio is extensible by design. To add support for new platforms (Gong, Salesloft, etc.):
 
 1. Create `content-scripts/platforms/{platform}-scraper.js`
-2. Add new `content_scripts` entry in `manifest.json`:
+2. Add to `manifest.json`:
    ```json
    {
      "matches": ["*://platform.com/*"],
      "js": ["content-scripts/utils.js", "content-scripts/platforms/platform-scraper.js"]
    }
    ```
-3. Follow the pattern from `zoom-scraper.js` or `chorus-scraper.js`
-4. Use the `window.HarnessExporterUtils` helpers (log, sleep, slugify, downloadFile)
+3. Use `window.HarnessExporterUtils` helpers (log, sleep, slugify, downloadFile)
 
-### Making Changes
+See [zoom-scraper.js](./content-scripts/platforms/zoom-scraper.js) for reference implementation.
 
-1. Create a feature branch:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+### Contributing
 
-2. Make your changes
-
-3. Test thoroughly on [hub.zoom.us/notes](https://hub.zoom.us/notes)
-
-4. Commit with a descriptive message:
-   ```bash
-   git commit -m "feat: add support for different date formats"
-   ```
-
-5. Push and create a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-## 🐛 Troubleshooting
-
-**Extension button doesn't appear**
-- Make sure you're on `hub.zoom.us/notes`
-- Refresh the page
-- Check the browser console for errors (F12)
-
-**No transcripts exported**
-- Verify your notes are visible in the sidebar
-- Check that notes contain actual transcript content
-- Open the browser console to see detailed logs
-
-**Transcript formatting issues**
-- Report an issue with the problematic note title/date format
-- Include browser console logs
-
-## 📝 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
-
-### Quick Start for Contributors
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test on real Zoom notes
-5. Submit a PR with a clear description
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details
-
-## 👤 Author
-
-**Neus Samir Escruela**
-- Email: neus.escruela@harness.io
-- GitHub: [@neussie](https://github.com/neussie)
-
-## 🔗 Related Projects
-
-- **[Notion Template](./SE_SecondBrain_Notion.zip)**: The Second Brain Notion template that powers your AI memory system
-- **[Harness Skills](https://github.com/harness/harness-skills)**: Additional Claude skills for sales engineers and customer success teams
-
-## 💡 Pro Tips
-
-- **Export weekly**: Make it a Friday ritual to export and upload the week's meetings
-- **Tag strategically**: Use Notion tags for customer stages (POV, POC, Production) to help Claude understand context
-- **Link stakeholders**: Connect meeting attendees to stakeholder profiles for relationship mapping
-- **Ask specific questions**: The more context Claude has, the better. Reference customer names, dates, or topics for precise answers
-
-## 🙏 Acknowledgments
-
-Built with ☕ by the Harness.io SE team for anyone managing complex customer relationships at scale.
-
-Special thanks to the team behind the Notion template integration that makes this workflow possible.
+Contributions welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting PRs.
 
 ---
 
-**Note**: This extension is not affiliated with or endorsed by Zoom Video Communications, Inc. or Notion Labs, Inc.
+## 🐛 Troubleshooting
+
+<details>
+<summary><strong>Extension button doesn't appear</strong></summary>
+
+- Verify you're on `hub.zoom.us/notes` or `chorus.ai/home`
+- Refresh the page
+- Check browser console (F12) for errors
+- Ensure extension is enabled in `chrome://extensions/`
+
+</details>
+
+<details>
+<summary><strong>No transcripts exported</strong></summary>
+
+- Verify meetings have "Meeting Recap" or "Meeting Brief" badges
+- Check that you're logged into the platform
+- Open browser console to see detailed logs
+- Ensure popup blockers aren't blocking downloads
+
+</details>
+
+<details>
+<summary><strong>Claude can't find my Notion database</strong></summary>
+
+- Verify Claude has access to your Notion workspace
+- Check that the template was imported correctly
+- Ensure database sharing settings allow Claude access
+
+</details>
+
+---
+
+## 🎯 Why Meetio?
+
+<table>
+<tr>
+<td width="50%">
+
+### Built by an SE, for SEs
+Solves the workflow we live every day. No guesswork.
+
+### Fills the Granola Gap
+Meeting intelligence that legal can actually approve - local, controlled, ours.
+
+### Compounds Over Time
+Every meeting makes your AI a little smarter. Your knowledge base grows automatically.
+
+</td>
+<td width="50%">
+
+### Zero Config, One Click
+Install and go. No API keys, no webhooks, no setup.
+
+### Privacy First
+Everything parsed locally. Nothing sent to third parties.
+
+### Extensible by Design
+Zoom and Chorus today. Complete automation next.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 💡 Pro Tips
+
+- 📅 **Export weekly**: Make it a Friday ritual to export the week's meetings
+- 🏷️ **Tag strategically**: Use Notion tags for deal stages (POV, POC, Production)
+- 🔗 **Link stakeholders**: Connect attendees to stakeholder profiles for relationship mapping
+- 🎯 **Be specific**: Reference customer names, dates, or topics when asking Claude
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](./LICENSE) for details
+
+---
+
+## 👤 Author
+
+**Neus Samir Escruela**  
+Solutions Engineer @ Harness.io
+
+- Email: neus.escruela@harness.io
+- GitHub: [@neussie](https://github.com/neussie)
+
+---
+
+## 🙏 Acknowledgments
+
+Built with ☕ by the Harness SE team for anyone managing complex customer relationships at scale.
+
+**Fills the Granola-shaped gap** - Meeting intelligence that legal can actually approve.
+
+---
+
+<div align="center">
+  
+  **Never forget a customer detail again.**
+  
+  ⭐ Star this repo if Meetio helps you ship faster!
+  
+  [Get Started](#-quick-start) • [Report Bug](https://github.com/neussie/meetio/issues) • [Request Feature](https://github.com/neussie/meetio/issues)
+  
+</div>
+
+---
+
+<sub>This extension is not affiliated with or endorsed by Zoom Video Communications, Inc., Chorus.ai, or Notion Labs, Inc.</sub>
