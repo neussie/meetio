@@ -190,32 +190,36 @@ Once your transcripts are in Notion, Claude becomes your account intelligence en
 <tr>
 <td width="50%">
 
-**📄 Generate POV Documents**
-```
-"Draft a POV for Acme's CI/CD modernization 
-from our last three calls"
-```
+### 📄 POV Documents
+*"Draft a POV for Acme's CI/CD modernization from our last three calls"*
 
-**🎬 Create Demo Scripts**
-```
-"Write a demo script tailored to what TechCo 
-told us they need"
-```
+Generate detailed point-of-view documents with full customer context and conversation history.
 
 </td>
 <td width="50%">
 
-**🔄 Build Reverse Demos**
-```
-"Build a reverse-demo guide for FNZ on the 
-security topics Simon raised"
-```
+### 🔄 Reverse Demos
+*"Build a reverse-demo guide for FNZ on the security topics Simon raised"*
 
-**📊 Analyze Accounts**
-```
-"Summarize top objections across my 
-financial-services accounts"
-```
+Create tailored demos based on specific stakeholder pain points and interests.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🎬 Demo Scripts
+*"Write a demo script tailored to what TechCo told us they need"*
+
+Build custom demo flows that address exactly what customers asked for in meetings.
+
+</td>
+<td width="50%">
+
+### 📊 Account Intelligence
+*"Summarize top objections across my financial-services accounts"*
+
+Extract patterns and insights across multiple customer conversations.
 
 </td>
 </tr>
