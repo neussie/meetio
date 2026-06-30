@@ -16,7 +16,7 @@ Stop copy-pasting meeting notes into Claude. Stop losing track of customer conve
 Meetio + Notion + Claude = Your AI memory system that never forgets a customer detail.
 
 1. **Meetio Extension**: Download all Zoom transcripts in bulk (one click!)
-2. **Notion Template**: Upload transcripts to a dedicated workspace that maps customers → stakeholders → meetings → tasks
+2. **Notion Template** ([download here](./SE_SecondBrain_Notion.zip)): Upload transcripts to a dedicated workspace that maps customers → stakeholders → meetings → tasks
 3. **Claude Integration**: Connect Claude to your Notion, and it has perfect context for every customer interaction
 
 Now you can ask Claude to:
@@ -57,8 +57,8 @@ Now you can ask Claude to:
 
 ### Step 2: Set Up Notion Template
 
-1. **Get the Notion template**: [Harness Meeting Intelligence Template](https://github.com/pvnarp/harness-agentic-skills)
-   - Duplicate the template to your Notion workspace
+1. **Get the Notion template**: [Download SE_SecondBrain_Notion.zip](./SE_SecondBrain_Notion.zip)
+   - Import the template to your Notion workspace
    - The template includes databases for:
      - 📊 **Customers**: Track all your accounts
      - 👥 **Stakeholders**: Map decision-makers and champions
@@ -257,7 +257,7 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## 🔗 Related Projects
 
-- **[Harness Meeting Intelligence Template](https://github.com/pvnarp/harness-agentic-skills)**: The Notion template that powers your AI memory system
+- **[Notion Template](./SE_SecondBrain_Notion.zip)**: The Second Brain Notion template that powers your AI memory system
 - **[Harness Skills](https://github.com/harness/harness-skills)**: Additional Claude skills for sales engineers and customer success teams
 
 ## 💡 Pro Tips
