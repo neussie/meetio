@@ -65,9 +65,11 @@ Now you can ask Claude to:
      - 📝 **Meeting Notes**: Store all transcripts with auto-linking
      - ✅ **Tasks**: Action items extracted from meetings
 
-2. **Upload your transcripts**:
-   - Drag and drop the markdown files exported by Meetio
-   - Notion will automatically parse metadata and create relationships
+2. **Process transcripts with Claude**:
+   - Connect Claude to your Notion workspace
+   - Upload the markdown files to Claude
+   - Ask Claude to populate the Notion databases with meeting information
+   - Claude will parse metadata and create proper relationships between customers, stakeholders, and meetings
 
 ### Step 3: Connect Claude to Your Notion
 
@@ -106,19 +108,35 @@ Claude now has perfect context from every customer conversation! 🎉
 
 **Note**: Chorus scraper works on individual meeting pages. For bulk export, navigate to each meeting you want to export.
 
-### Upload to Notion
+### Process Transcripts with Claude
 
-1. Open your **Meeting Intelligence** workspace in Notion
-2. Navigate to the **"Meeting Notes"** database
-3. Drag and drop all exported `.md` files
-4. Notion automatically:
-   - Parses metadata (date, attendees, title)
-   - Links to customers and stakeholders
-   - Extracts action items
+1. **Connect Claude to your Notion workspace** (if not already connected)
+   - Go to Claude settings and connect your Notion
+   - Grant access to your Second Brain workspace
 
-### Ask Claude Anything
+2. **Upload transcripts to Claude**:
+   - Attach the exported `.md` files to your Claude conversation
+   - Or place them in a folder Claude can access
 
-With Claude connected to your Notion:
+3. **Ask Claude to process them**:
+   ```
+   "Claude, I've exported meeting transcripts. Please read the Notion template structure 
+   (Customers, Stakeholders, Meeting Notes databases) and populate them with information 
+   from these transcripts. Create or update customer pages, link stakeholders, and add 
+   the meeting notes with proper relationships."
+   ```
+
+4. Claude will:
+   - Parse metadata (date, attendees, title, customer)
+   - Create/update customer pages in the Customers database
+   - Create/update stakeholder profiles
+   - Add meeting notes to the Meeting Notes database
+   - Link everything together (meetings → customers → stakeholders)
+   - Extract action items and tasks
+
+### Query Your AI Memory
+
+Once Claude has processed your transcripts into Notion, you can ask it anything:
 
 ```
 💬 "Claude, create a POV for Acme Corp's CI/CD modernization based on our last 3 calls"
@@ -128,7 +146,11 @@ With Claude connected to your Notion:
 💬 "Claude, draft a reverse demo guide for FinanceCorp focusing on security topics they mentioned"
 
 💬 "Claude, summarize key objections from all healthcare customers this quarter"
+
+💬 "Claude, who are the key stakeholders at Virgin Media O2 and what topics have we discussed?"
 ```
+
+Claude reads your Notion database and has perfect context from every customer conversation! 🎉
 
 ### Example Export Format
 
